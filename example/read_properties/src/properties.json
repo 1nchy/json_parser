@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/third/expected/include",
+                "${workspaceFolder}/third/finite_state_machine/include"
+            ],
+            "defines": []
+        }
+    ],
+    "version": 4
+}

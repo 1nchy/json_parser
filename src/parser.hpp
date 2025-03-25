@@ -33,7 +33,12 @@ public:
     auto parse_value() -> tl::expected<node, error_code>;
     auto value() const -> node;
 private:
-    auto skip_blank() -> bool;
+    /**
+     * @brief skip blank and control character in json
+     * @retval true content left
+     * @retval false no more content
+     */
+    auto skip_nonsense() -> bool;
 private:
     fsm::context<boolean_state> _boolean_fsm;
     fsm::context<floating_point_state> _floating_point_fsm;

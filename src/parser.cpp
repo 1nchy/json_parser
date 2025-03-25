@@ -81,11 +81,13 @@ parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
  *   else try each fsm
  */
 auto parser::parse_array() -> tl::expected<node, error_code> {
+    if (*_ptr != '[') {
+        return tl::unexpected(0);
+    }
     node _n(array{});
-    assert(*_ptr == '[');
     while (*_ptr == '[' || *_ptr == ',') {
         ++_ptr;
-        if (!skip_blank()) {
+        if (!skip_nonsense()) {
             return tl::unexpected(0);
         }
         if (*_ptr == ']') {
@@ -98,7 +100,7 @@ auto parser::parse_array() -> tl::expected<node, error_code> {
         else {
             return _r;
         }
-        if (!skip_blank()) {
+        if (!skip_nonsense()) {
             return tl::unexpected(0);
         }
     }
@@ -119,11 +121,13 @@ auto parser::parse_array() -> tl::expected<node, error_code> {
  *   else try each fsm
  */
 auto parser::parse_object() -> tl::expected<node, error_code> {
-    assert(*_ptr == '{');
+    if (*_ptr != '{') {
+        return tl::unexpected(0);
+    }
     node _n(object{});
     while (*_ptr == '{' || *_ptr == ',') {
         ++_ptr;
-        if (!skip_blank()) {
+        if (!skip_nonsense()) {
             return tl::unexpected(0);
         }
         if (*_ptr == '}') {
@@ -134,7 +138,7 @@ auto parser::parse_object() -> tl::expected<node, error_code> {
             return _kr;
         }
         const auto _k = std::get<string>(_kr.value().value());
-        if (!skip_blank()) {
+        if (!skip_nonsense()) {
             return tl::unexpected(0);
         }
         if (*_ptr != ':') {
@@ -146,7 +150,7 @@ auto parser::parse_object() -> tl::expected<node, error_code> {
             return _r;
         }
         _n.insert(_k, _r.value());
-        if (!skip_blank()) {
+        if (!skip_nonsense()) {
             return tl::unexpected(0);
         }
     }
@@ -161,7 +165,7 @@ auto parser::parse_object() -> tl::expected<node, error_code> {
  * @details skip blank first
  */
 auto parser::parse_value() -> tl::expected<node, error_code> {
-    if (!skip_blank()) {
+    if (!skip_nonsense()) {
         return tl::unexpected(0);
     }
     node _n;
@@ -203,8 +207,8 @@ auto parser::value() const -> node {
 }
 
 
-auto parser::skip_blank() -> bool {
-    while (_ptr != _json.cend() && isblank(*_ptr)) {
+auto parser::skip_nonsense() -> bool {
+    while (_ptr != _json.cend() && (isblank(*_ptr) || !isprint(*_ptr))) {
         ++_ptr;
     }
     return _ptr != _json.cend();
