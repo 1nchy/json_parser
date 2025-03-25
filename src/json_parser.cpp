@@ -19,6 +19,32 @@ auto node::operator=(value_type&& _value) -> node& {
 }
 
 
+auto node::operator[](const string& _k) -> node& {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->at(_k);
+    }
+    throw std::runtime_error("not an object");
+}
+auto node::operator[](const string& _k) const -> const node& {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->at(_k);
+    }
+    throw std::runtime_error("not an object");
+}
+auto node::operator[](size_t _i) -> node& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->at(_i);
+    }
+    throw std::runtime_error("not an object");
+}
+auto node::operator[](size_t _i) const -> const node& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->at(_i);
+    }
+    throw std::runtime_error("not an object");
+}
+
+
 void node::insert(const node& _n) {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(_n);
@@ -46,6 +72,12 @@ void node::insert(const string& _k, node&& _n) {
         return;
     }
     throw std::runtime_error("not an object");
+}
+auto node::value() -> value_type& {
+    return _value;
+}
+auto node::value() const -> const value_type& {
+    return _value;
 }
 
 

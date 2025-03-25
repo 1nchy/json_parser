@@ -20,8 +20,8 @@ using integer = long;
 using floating_point = double;
 using string = std::string;
 using array = std::vector<node>;
-using object = std::map<string, node>;
 // using object = std::unordered_map<string, node>;
+using object = std::map<string, node>;
 using value_type = std::variant<monostate, boolean, integer, floating_point, string, array, object>;
 
 struct node {
@@ -31,54 +31,49 @@ public:
     node(node&&) = default;
     node(const value_type& _value);
     node(value_type&& _value);
-    node& operator=(const node&) = default;
-    node& operator=(node&&) = default;
-    node& operator=(const value_type&);
-    node& operator=(value_type&&);
-    auto& operator[](const string& _k) {
-        if (auto _ptr = std::get_if<object>(&_value)) {
-            return (*_ptr)[_k];
-        }
-        throw std::runtime_error("not an object");
-    }
-    // auto& operator[](const char* _k) {
-    //     if (auto _ptr = std::get_if<object>(&_value)) {
-    //         return (*_ptr)[string(_k)];
-    //     }
-    //     throw std::runtime_error("not an object");
-    // }
-    template <size_t _L> auto& operator[](const char (&_k)[_L]) {
-        if (auto _ptr = std::get_if<object>(&_value)) {
-            return (*_ptr)[string(_k)];
-        }
-        throw std::runtime_error("not an object");
-    }
-    auto& operator[](size_t _i) {
-        if (auto _ptr = std::get_if<array>(&_value)) {
-            return (*_ptr)[_i];
-        }
-        throw std::runtime_error("not an array");
-    }
+    auto operator=(const node&) -> node& = default;
+    auto operator=(node&&) -> node& = default;
+    auto operator=(const value_type&) -> node&;
+    auto operator=(value_type&&) -> node&;
+    auto operator[](const string&) -> node&;
+    auto operator[](const string&) const -> const node&;
+    template <size_t _L> auto operator[](const char (&)[_L]) -> node&;
+    template <size_t _L> auto operator[](const char (&)[_L]) const -> const node&;
+    auto operator[](size_t) -> node&;
+    auto operator[](size_t) const -> const node&;
     void insert(const node&);
     void insert(node&&);
     void insert(const string&, const node&);
     void insert(const string&, node&&);
-    const value_type& value() const { return _value; }
-    value_type& value() { return _value; }
+    auto value() -> value_type&;
+    auto value() const -> const value_type&;
+    template<typename _Tp> auto value() -> _Tp&;
+    template<typename _Tp> auto value() const -> const _Tp&;
 private:
     value_type _value;
 };
 
-/**
- * @details
- * intrinsics: node = json.load(f)
- * _ = intrinsics["key"]
- * json.dump(intrinsics, f)
- * str = json.dumps(intrinsics)
- */
-
 auto load(const std::string& _s) -> node;
 auto dump(const node& _n) -> std::string;
+
+template <size_t _L> auto node::operator[](const char (&_k)[_L]) -> node& {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->at(string(_k));
+    }
+    throw std::runtime_error("not an object");
+}
+template <size_t _L> auto node::operator[](const char (&_k)[_L]) const -> const node& {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->at(string(_k));
+    }
+    throw std::runtime_error("not an object");
+}
+template <typename _Tp> auto node::value() -> _Tp& {
+    return std::get<_Tp>(_value);
+}
+template <typename _Tp> auto node::value() const -> const _Tp& {
+    return std::get<_Tp>(_value);
+}
 
 }
 
