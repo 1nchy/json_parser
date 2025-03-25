@@ -81,37 +81,31 @@ parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
  *   else try each fsm
  */
 auto parser::parse_array() -> tl::expected<node, error_code> {
-    if (*_ptr != '[') {
+    if (after_nonsense('[')) {
         return tl::unexpected(0);
     }
     node _n(array{});
-    while (*_ptr == '[' || *_ptr == ',') {
-        ++_ptr;
-        if (!skip_nonsense()) {
-            return tl::unexpected(0);
-        }
-        if (*_ptr == ']') {
-            break;
-        }
+    if (after_nonsense(']')) {
+        return _n;
+    }
+    bool _first = true;
+    while (_first ^ after_nonsense(',')) {
         auto _r = parse_value();
-        if (_r.has_value()) {
-            _n.insert(_r.value());
-        }
-        else {
+        if (!_r.has_value()) {
             return _r;
         }
-        if (!skip_nonsense()) {
-            return tl::unexpected(0);
-        }
+        _n.insert(_r.value());
+        _first = false;
     }
-    if (*_ptr != ']') {
+    if (!after_nonsense(']')) {
         return tl::unexpected(0);
     }
-    ++_ptr;
     return _n;
 }
 /**
  * @brief parse an object (*_ptr == '{')
+ * @details
+ * current pointer must point to '{'
  * @implements
  * while { or ,
  *   parse string key
@@ -121,43 +115,33 @@ auto parser::parse_array() -> tl::expected<node, error_code> {
  *   else try each fsm
  */
 auto parser::parse_object() -> tl::expected<node, error_code> {
-    if (*_ptr != '{') {
+    if (after_nonsense('{')) {
         return tl::unexpected(0);
     }
     node _n(object{});
-    while (*_ptr == '{' || *_ptr == ',') {
-        ++_ptr;
-        if (!skip_nonsense()) {
-            return tl::unexpected(0);
-        }
-        if (*_ptr == '}') {
-            break;
-        }
+    if (after_nonsense('}')) {
+        return _n;
+    }
+    bool _first = true;
+    while (_first ^ after_nonsense(',')) {
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
             return _kr;
         }
         const auto _k = std::get<string>(_kr.value().value());
-        if (!skip_nonsense()) {
+        if (!after_nonsense(':')) {
             return tl::unexpected(0);
         }
-        if (*_ptr != ':') {
-            return tl::unexpected(0);
-        }
-        ++_ptr;
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
         }
         _n.insert(_k, _r.value());
-        if (!skip_nonsense()) {
-            return tl::unexpected(0);
-        }
+        _first = false;
     }
-    if (*_ptr != '}') {
+    if (!after_nonsense('}')) {
         return tl::unexpected(0);
     }
-    ++_ptr;
     return _n;
 }
 /**
@@ -169,14 +153,14 @@ auto parser::parse_value() -> tl::expected<node, error_code> {
         return tl::unexpected(0);
     }
     node _n;
-    if (*_ptr == '[') {
+    if (after_nonsense('[')) {
         auto _r = parse_array();
         if (!_r.has_value()) {
             return _r;
         }
         _n = _r.value();
     }
-    else if (*_ptr == '{') {
+    else if (after_nonsense('{')) {
         auto _r = parse_object();
         if (_r.has_value()) {
             return _r;
@@ -207,11 +191,23 @@ auto parser::value() const -> node {
 }
 
 
-auto parser::skip_nonsense() -> bool {
-    while (_ptr != _json.cend() && (isblank(*_ptr) || !isprint(*_ptr))) {
-        ++_ptr;
+auto parser::_M_skip_nonsense() const -> pointer {
+    pointer _p = _ptr;
+    while (_p != _json.cend() && (isblank(*_p) || !isprint(*_p))) {
+        ++_p;
     }
+    return _p;
+}
+auto parser::skip_nonsense() -> bool {
+    _ptr = _M_skip_nonsense();
     return _ptr != _json.cend();
+}
+auto parser::after_nonsense(char _c) -> bool {
+    if (!skip_nonsense() || *_ptr != _c) {
+        return false;
+    }
+    ++_ptr;
+    return true;
 }
 
 }

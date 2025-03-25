@@ -23,6 +23,7 @@ public:
     parser(const std::string&);
     parser(const parser&) = delete;
     parser& operator=(const parser&) = delete;
+    using pointer = std::string::const_iterator;
 public:
     /**
      * @brief parse boolean | integer | floating_point | string
@@ -35,22 +36,36 @@ public:
 private:
     /**
      * @brief skip blank and control character in json
+     * @return pointer to the character after nonsense
+     */
+    auto _M_skip_nonsense() const -> pointer;
+    /**
+     * @brief skip blank and control character in json
      * @retval true content left
      * @retval false no more content
      */
     auto skip_nonsense() -> bool;
+    /**
+     * @brief skip nonsense and check if the given character appears after nonsense, update pointer to the next if true
+     * @retval true the given character appears after nonsense
+     * @retval false pointer meets cend() or the given character doesn't appears after nonsense
+     */
+    auto after_nonsense(char) -> bool;
 private:
     fsm::context<boolean_state> _boolean_fsm;
     fsm::context<floating_point_state> _floating_point_fsm;
     fsm::context<integer_state> _integer_fsm;
     fsm::context<string_state> _string_fsm;
     const std::string& _json;
-    std::string::const_iterator _ptr;
+    pointer _ptr;
     node _n;
 };
 
 template <typename _St> auto
 parser::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, error_code> {
+    if (!skip_nonsense()) {
+        return tl::unexpected(0);
+    }
     _fsm.restart();
     for (auto _i = _ptr; _i != _json.cend(); ++_i) {
         if (!fsm::character::handle(_fsm, *_i)) {
