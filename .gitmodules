@@ -1,0 +1,6 @@
+[submodule "third/finite_state_machine"]
+	path = third/finite_state_machine
+	url = https://github.com/1nchy/finite_state_machine.git
+[submodule "third/expected"]
+	path = third/expected
+	url = https://github.com/TartanLlama/expected.git
