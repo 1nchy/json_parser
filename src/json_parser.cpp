@@ -1,6 +1,6 @@
 #include "json_parser.hpp"
 
-#include "parser.hpp"
+#include "loader.hpp"
 
 namespace icy {
 
@@ -82,8 +82,8 @@ auto node::value() const -> const value_type& {
 
 
 auto load(const std::string& _s) -> node {
-    parser _parser(_s);
-    return _parser.value();
+    loader _loader(_s);
+    return _loader.value();
 }
 auto dump(const node& _n) -> std::string {
     return "";

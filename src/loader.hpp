@@ -1,5 +1,5 @@
-#ifndef _ICY_JSON_PARSER_SRC_PARSER_HPP_
-#define _ICY_JSON_PARSER_SRC_PARSER_HPP_
+#ifndef _ICY_JSON_PARSER_SRC_LOADER_HPP_
+#define _ICY_JSON_PARSER_SRC_LOADER_HPP_
 
 #include "boolean.hpp"
 #include "floating_point.hpp"
@@ -12,17 +12,17 @@ namespace icy {
 
 namespace json {
 
-struct parser;
+struct loader;
 
 struct error_code {
     error_code(int _i = 0) {}
 };
 
-struct parser {
+struct loader {
 public:
-    parser(const std::string&);
-    parser(const parser&) = delete;
-    parser& operator=(const parser&) = delete;
+    loader(const std::string&);
+    loader(const loader&) = delete;
+    loader& operator=(const loader&) = delete;
     using pointer = std::string::const_iterator;
 public:
     /**
@@ -32,7 +32,7 @@ public:
     auto parse_array() -> tl::expected<node, error_code>;
     auto parse_object() -> tl::expected<node, error_code>;
     auto parse_value() -> tl::expected<node, error_code>;
-    auto value() const -> node;
+    auto value() -> node;
 private:
     /**
      * @brief skip blank and control character in json
@@ -58,11 +58,10 @@ private:
     fsm::context<string_state> _string_fsm;
     const std::string& _json;
     pointer _ptr;
-    node _n;
 };
 
 template <typename _St> auto
-parser::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, error_code> {
+loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, error_code> {
     if (!skip_nonsense()) {
         return tl::unexpected(0);
     }
@@ -85,4 +84,4 @@ parser::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, error_
 
 }
 
-#endif // _ICY_JSON_PARSER_SRC_PARSER_HPP_
+#endif // _ICY_JSON_PARSER_SRC_LOADER_HPP_

@@ -1,4 +1,4 @@
-#include "parser.hpp"
+#include "loader.hpp"
 
 #include "json_parser.hpp"
 
@@ -6,7 +6,7 @@ namespace icy {
 
 namespace json {
 
-parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
+loader::loader(const std::string& _json) : _json(_json) {
     _boolean_fsm.enroll<
         boolean_state::X,
         boolean_state::F,
@@ -61,10 +61,6 @@ parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
     _string_fsm.default_entry<
         string_state::A
     >();
-    _ptr = _json.cbegin();
-    if (auto _r = parse_value()) {
-        _n =_r.value();
-    }
 }
 
 /**
@@ -75,7 +71,7 @@ parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
  *   elif { parse_object
  *   else try each fsm
  */
-auto parser::parse_array() -> tl::expected<node, error_code> {
+auto loader::parse_array() -> tl::expected<node, error_code> {
     if (after_nonsense('[')) {
         return tl::unexpected(0);
     }
@@ -109,7 +105,7 @@ auto parser::parse_array() -> tl::expected<node, error_code> {
  *   elif { parse_object
  *   else try each fsm
  */
-auto parser::parse_object() -> tl::expected<node, error_code> {
+auto loader::parse_object() -> tl::expected<node, error_code> {
     if (after_nonsense('{')) {
         return tl::unexpected(0);
     }
@@ -143,7 +139,7 @@ auto parser::parse_object() -> tl::expected<node, error_code> {
  * @brief parse a value (boolean | integer | floating_point | string | array | object)
  * @details skip blank first
  */
-auto parser::parse_value() -> tl::expected<node, error_code> {
+auto loader::parse_value() -> tl::expected<node, error_code> {
     if (!skip_nonsense()) {
         return tl::unexpected(0);
     }
@@ -181,23 +177,27 @@ auto parser::parse_value() -> tl::expected<node, error_code> {
     }
     return _n;
 }
-auto parser::value() const -> node {
-    return this->_n;
+auto loader::value() -> node {
+    _ptr = _json.cbegin();
+    if (auto _r = parse_value()) {
+        return _r.value();
+    }
+    throw std::runtime_error("not a json");
 }
 
 
-auto parser::_M_skip_nonsense() const -> pointer {
+auto loader::_M_skip_nonsense() const -> pointer {
     pointer _p = _ptr;
     while (_p != _json.cend() && (isblank(*_p) || !isprint(*_p))) {
         ++_p;
     }
     return _p;
 }
-auto parser::skip_nonsense() -> bool {
+auto loader::skip_nonsense() -> bool {
     _ptr = _M_skip_nonsense();
     return _ptr != _json.cend();
 }
-auto parser::after_nonsense(char _c) -> bool {
+auto loader::after_nonsense(char _c) -> bool {
     if (!skip_nonsense() || *_ptr != _c) {
         return false;
     }
