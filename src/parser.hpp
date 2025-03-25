@@ -33,6 +33,8 @@ public:
     auto parse_value() -> tl::expected<node, error_code>;
     auto value() const -> node;
 private:
+    auto skip_blank() -> bool;
+private:
     fsm::context<boolean_state> _boolean_fsm;
     fsm::context<floating_point_state> _floating_point_fsm;
     fsm::context<integer_state> _integer_fsm;

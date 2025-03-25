@@ -72,15 +72,22 @@ parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
     }
 }
 
+/**
+ * @brief parse an array (*_ptr == '[')
+ * @implements
+ * while [ or ,
+ *   if [ parse_aray
+ *   elif { parse_object
+ *   else try each fsm
+ */
 auto parser::parse_array() -> tl::expected<node, error_code> {
     node _n(array{});
     assert(*_ptr == '[');
-    // while [ or ,:
-    //   if [ parse_array
-    //   if { parse_object
-    //   if try each fsm
     while (*_ptr == '[' || *_ptr == ',') {
         ++_ptr;
+        if (!skip_blank()) {
+            return tl::unexpected(0);
+        }
         if (*_ptr == ']') {
             break;
         }
@@ -91,22 +98,34 @@ auto parser::parse_array() -> tl::expected<node, error_code> {
         else {
             return _r;
         }
+        if (!skip_blank()) {
+            return tl::unexpected(0);
+        }
     }
-    assert(*_ptr == ']');
+    if (*_ptr != ']') {
+        return tl::unexpected(0);
+    }
     ++_ptr;
     return _n;
 }
+/**
+ * @brief parse an object (*_ptr == '{')
+ * @implements
+ * while { or ,
+ *   parse string key
+ *   parse colon
+ *   if [ parse_aray
+ *   elif { parse_object
+ *   else try each fsm
+ */
 auto parser::parse_object() -> tl::expected<node, error_code> {
-    node _n(object{});
     assert(*_ptr == '{');
-    // while { or ,:
-    //   parse string key
-    //   parse colon
-    //   if [ parse_array
-    //   if { parse_object
-    //   if try each fsm
+    node _n(object{});
     while (*_ptr == '{' || *_ptr == ',') {
         ++_ptr;
+        if (!skip_blank()) {
+            return tl::unexpected(0);
+        }
         if (*_ptr == '}') {
             break;
         }
@@ -115,19 +134,36 @@ auto parser::parse_object() -> tl::expected<node, error_code> {
             return _kr;
         }
         const auto _k = std::get<string>(_kr.value().value());
-        assert(*_ptr == ':');
+        if (!skip_blank()) {
+            return tl::unexpected(0);
+        }
+        if (*_ptr != ':') {
+            return tl::unexpected(0);
+        }
         ++_ptr;
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
         }
         _n.insert(_k, _r.value());
+        if (!skip_blank()) {
+            return tl::unexpected(0);
+        }
     }
-    assert(*_ptr == '}');
+    if (*_ptr != '}') {
+        return tl::unexpected(0);
+    }
     ++_ptr;
     return _n;
 }
+/**
+ * @brief parse a value (boolean | integer | floating_point | string | array | object)
+ * @details skip blank first
+ */
 auto parser::parse_value() -> tl::expected<node, error_code> {
+    if (!skip_blank()) {
+        return tl::unexpected(0);
+    }
     node _n;
     if (*_ptr == '[') {
         auto _r = parse_array();
@@ -164,6 +200,14 @@ auto parser::parse_value() -> tl::expected<node, error_code> {
 }
 auto parser::value() const -> node {
     return this->_n;
+}
+
+
+auto parser::skip_blank() -> bool {
+    while (_ptr != _json.cend() && isblank(*_ptr)) {
+        ++_ptr;
+    }
+    return _ptr != _json.cend();
 }
 
 }
