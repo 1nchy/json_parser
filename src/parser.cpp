@@ -27,17 +27,12 @@ parser::parser(const std::string& _json) : _json(_json), _n(monostate{}) {
     _floating_point_fsm.enroll<
         floating_point_state::AB,
         floating_point_state::B,
-        floating_point_state::BCFJ,
+        floating_point_state::C,
         floating_point_state::D,
-        floating_point_state::DEFJ,
-        floating_point_state::GH,
-        floating_point_state::H,
-        floating_point_state::HIJ
+        floating_point_state::E
     >();
     _floating_point_fsm.accept<
-        floating_point_state::BCFJ,
-        floating_point_state::DEFJ,
-        floating_point_state::HIJ
+        floating_point_state::E
     >();
     _floating_point_fsm.default_entry<
         floating_point_state::AB
@@ -171,12 +166,12 @@ auto parser::parse_value() -> tl::expected<node, error_code> {
         if (auto _r = parse_normal_value(_boolean_fsm)) {
             _n = _r.value();
         }
+        else if (auto _r = parse_normal_value(_floating_point_fsm)) {
+            _n = _r.value();
+        }
         else if (auto _r = parse_normal_value(_integer_fsm)) {
             _n = _r.value();
         }
-        // else if (auto _r = parse_normal_value(_floating_point_fsm)) {
-        //     _n = _r.value();
-        // }
         else if (auto _r = parse_normal_value(_string_fsm)) {
             _n = _r.value();
         }

@@ -7,8 +7,10 @@
                 "${workspaceFolder}/third/expected/include",
                 "${workspaceFolder}/third/finite_state_machine/include"
             ],
-            "defines": []
+            "supported_standard": [
+                99, 11, 14, 17, 20
+            ]
         }
     ],
-    "version": 4
+    "version": 2.2
 }
