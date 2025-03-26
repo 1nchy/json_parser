@@ -138,10 +138,16 @@ template <size_t _L> auto node::operator[](const char (&_k)[_L]) const -> const 
     throw bad_cast("not an object");
 }
 template <typename _Tp> auto node::value() -> _Tp& {
-    return std::get<_Tp>(_value);
+    if (std::holds_alternative<_Tp>(_value)) {
+        return std::get<_Tp>(_value);
+    }
+    throw bad_cast(std::string("not a/an ") + typeid(_Tp).name());
 }
 template <typename _Tp> auto node::value() const -> const _Tp& {
-    return std::get<_Tp>(_value);
+    if (std::holds_alternative<_Tp>(_value)) {
+        return std::get<_Tp>(_value);
+    }
+    throw bad_cast(std::string("not a/an ") + typeid(_Tp).name());
 }
 
 }
