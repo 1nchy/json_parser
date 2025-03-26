@@ -24,25 +24,25 @@ auto node::operator[](const string& _k) -> node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
         return _ptr->at(_k);
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 auto node::operator[](const string& _k) const -> const node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
         return _ptr->at(_k);
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 auto node::operator[](size_t _i) -> node& {
     if (auto _ptr = std::get_if<array>(&_value)) {
         return _ptr->at(_i);
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 auto node::operator[](size_t _i) const -> const node& {
     if (auto _ptr = std::get_if<array>(&_value)) {
         return _ptr->at(_i);
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 
 
@@ -51,42 +51,42 @@ void node::push(const node& _n) {
         _ptr->push_back(_n);
         return;
     }
-    throw std::runtime_error("not an array");
+    throw bad_cast("not an array");
 }
 void node::push(node&& _n) {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(std::move(_n));
         return;
     }
-    throw std::runtime_error("not an array");
+    throw bad_cast("not an array");
 }
 void node::pop() {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->pop_back();
         return;
     }
-    throw std::runtime_error("not an array");
+    throw bad_cast("not an array");
 }
 void node::insert(const string& _k, const node& _n) {
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, _n});
         return;
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 void node::insert(const string& _k, node&& _n) {
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, std::move(_n)});
         return;
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 void node::erase(const string& _k) {
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->erase(_k);
         return;
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object");
 }
 void node::clear() {
     if (auto _ptr = std::get_if<array>(&_value)) {
@@ -97,7 +97,7 @@ void node::clear() {
         _ptr->clear();
         return;
     }
-    throw std::runtime_error("not an object");
+    throw bad_cast("not an object or array");
 }
 auto node::value() -> value_type& {
     return _value;
@@ -105,6 +105,21 @@ auto node::value() -> value_type& {
 auto node::value() const -> const value_type& {
     return _value;
 }
+
+
+
+exception::exception(const std::string& _msg) : std::exception(), _msg(_msg) {}
+exception::exception(const char* _msg) : std::exception(), _msg(_msg) {}
+auto exception::what() const noexcept -> const char* {
+    return _msg.c_str();
+}
+bad_content::bad_content(const std::string& _msg) : exception(_msg) {}
+bad_content::bad_content(const char* _msg) : exception(_msg) {}
+bad_cast::bad_cast(const std::string& _msg) : exception(_msg) {}
+bad_cast::bad_cast(const char* _msg) : exception(_msg) {}
+// out_of_range::out_of_range(const std::string& _msg) : exception(_msg) {}
+// out_of_range::out_of_range(const char* _msg) : exception(_msg) {}
+
 
 
 auto load(const std::string& _s) -> node {

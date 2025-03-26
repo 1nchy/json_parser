@@ -71,9 +71,9 @@ loader::loader(const std::string& _json) : _json(_json) {
  *   elif { parse_object
  *   else try each fsm
  */
-auto loader::parse_array() -> tl::expected<node, error_code> {
+auto loader::parse_array() -> tl::expected<node, bad_content> {
     if (after_nonsense('[')) {
-        return tl::unexpected(0);
+        return tl::unexpected(bad_content("unknown error"));
     }
     node _n(array{});
     if (after_nonsense(']')) {
@@ -87,7 +87,7 @@ auto loader::parse_array() -> tl::expected<node, error_code> {
         _n.push(_r.value());
     }
     if (!after_nonsense(']')) {
-        return tl::unexpected(0);
+        return tl::unexpected(bad_content("invalid array"));
     }
     return _n;
 }
@@ -103,9 +103,9 @@ auto loader::parse_array() -> tl::expected<node, error_code> {
  *   elif { parse_object
  *   else try each fsm
  */
-auto loader::parse_object() -> tl::expected<node, error_code> {
+auto loader::parse_object() -> tl::expected<node, bad_content> {
     if (after_nonsense('{')) {
-        return tl::unexpected(0);
+        return tl::unexpected(bad_content("unknown error"));
     }
     node _n(object{});
     if (after_nonsense('}')) {
@@ -118,7 +118,7 @@ auto loader::parse_object() -> tl::expected<node, error_code> {
         }
         const auto _k = std::get<string>(_kr.value().value());
         if (!after_nonsense(':')) {
-            return tl::unexpected(0);
+            return tl::unexpected(bad_content("valid object"));
         }
         auto _r = parse_value();
         if (!_r.has_value()) {
@@ -127,7 +127,7 @@ auto loader::parse_object() -> tl::expected<node, error_code> {
         _n.insert(_k, _r.value());
     }
     if (!after_nonsense('}')) {
-        return tl::unexpected(0);
+        return tl::unexpected(bad_content("valid object"));
     }
     return _n;
 }
@@ -135,9 +135,9 @@ auto loader::parse_object() -> tl::expected<node, error_code> {
  * @brief parse a value (boolean | integer | floating_point | string | array | object)
  * @details skip blank first
  */
-auto loader::parse_value() -> tl::expected<node, error_code> {
+auto loader::parse_value() -> tl::expected<node, bad_content> {
     if (!skip_nonsense()) {
-        return tl::unexpected(0);
+        return tl::unexpected(bad_content("too little content"));
     }
     node _n;
     if (after_nonsense('[')) {
@@ -168,32 +168,36 @@ auto loader::parse_value() -> tl::expected<node, error_code> {
             _n = _r.value();
         }
         else {
-            return tl::unexpected(0);
+            return tl::unexpected(bad_content("invalid value"));
         }
     }
     return _n;
 }
 auto loader::operator()() -> node {
     _ptr = _json.cbegin();
-    if (auto _r = parse_value()) {
+    auto _r = parse_value();
+    if (skip_nonsense()) {
+        throw bad_content("too much content");
+    }
+    if (_r.has_value()) {
         return _r.value();
     }
-    throw std::runtime_error("not a json");
+    throw _r.error();
 }
 
 
-auto loader::_M_skip_nonsense() const -> pointer {
+auto loader::_M_skip_nonsense() const noexcept -> pointer {
     pointer _p = _ptr;
     while (_p != _json.cend() && (isblank(*_p) || !isprint(*_p))) {
         ++_p;
     }
     return _p;
 }
-auto loader::skip_nonsense() -> bool {
+auto loader::skip_nonsense() noexcept -> bool {
     _ptr = _M_skip_nonsense();
     return _ptr != _json.cend();
 }
-auto loader::after_nonsense(char _c) -> bool {
+auto loader::after_nonsense(char _c) noexcept -> bool {
     if (!skip_nonsense() || *_ptr != _c) {
         return false;
     }

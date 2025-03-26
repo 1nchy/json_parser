@@ -16,6 +16,7 @@ public:
     dumper(const node&);
     dumper(const dumper&) = delete;
     dumper& operator=(const dumper&) = delete;
+    ~dumper() = default;
 public:
     void build_boolean(const node&);
     void build_integer(const node&);
