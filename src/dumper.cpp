@@ -1,5 +1,7 @@
 #include "dumper.hpp"
 
+#include "utils.hpp"
+
 namespace icy {
 
 namespace json {
@@ -74,7 +76,16 @@ auto dumper::operator()() -> std::string {
 }
 
 auto dumper::_M_build_string(const string& _s) -> void {
-    _ss << '\"' << _s <<('\"');
+    _ss << '\"';
+    for (const char _c : _s) {
+        if (auto _x = char_2_esc(_c)) {
+            _ss << '\\' << _x;
+        }
+        else {
+            _ss << _c;
+        }
+    }
+    _ss << '\"';
 }
 
 }

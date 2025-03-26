@@ -48,7 +48,7 @@ auto string_state::BE::handle(const fsm::character::double_quote& _e) -> label_t
 }
 auto string_state::C::handle(const fsm::character::printable_code& _e) -> label_type {
     ++_length;
-    _str.push_back(escape_character(_e.value()));
+    _str.push_back(esc_2_char(_e.value()));
     return BDE::label();
 }
 auto string_state::BDE::handle(const fsm::character::printable_code& _e) -> label_type {

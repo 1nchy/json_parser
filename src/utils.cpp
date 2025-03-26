@@ -21,7 +21,7 @@ template <> auto from_string<long double>(const std::string& _s) -> long double 
     return std::stold(_s);
 }
 
-auto escape_character(const char _c) -> char {
+auto esc_2_char(const char _c) -> char {
     switch (_c) {
         case 'a' : return '\a';
         case 'b' : return '\b';
@@ -30,7 +30,21 @@ auto escape_character(const char _c) -> char {
         case 'r' : return '\r';
         case 't' : return '\t';
         case 'v' : return '\v';
+        case '\\' : return '\\';
         default : return _c;
+    }
+}
+auto char_2_esc(const char _c) -> char {
+    switch (_c) {
+    case '\a' : return 'a';
+    case '\b' : return 'b';
+    case '\f' : return 'f';
+    case '\n' : return 'n';
+    case '\r' : return 'r';
+    case '\t' : return 't';
+    case '\v' : return 'v';
+    case '\\' : return '\\';
+    default : return 0;
     }
 }
 

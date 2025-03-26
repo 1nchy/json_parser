@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Arch\tLinux",
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/third/expected/include",

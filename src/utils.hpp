@@ -7,7 +7,8 @@ namespace icy {
 
 template <typename _Tp> auto from_string(const std::string&) -> _Tp;
 
-auto escape_character(const char _c) -> char;
+auto esc_2_char(const char _c) -> char;
+auto char_2_esc(const char _c) -> char;
 
 }
 
