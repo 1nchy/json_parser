@@ -79,14 +79,12 @@ auto loader::parse_array() -> tl::expected<node, error_code> {
     if (after_nonsense(']')) {
         return _n;
     }
-    bool _first = true;
-    while (_first ^ after_nonsense(',')) {
+    for (bool _first = true; _first ^ after_nonsense(','); _first = false) {
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
         }
         _n.insert(_r.value());
-        _first = false;
     }
     if (!after_nonsense(']')) {
         return tl::unexpected(0);
@@ -113,8 +111,7 @@ auto loader::parse_object() -> tl::expected<node, error_code> {
     if (after_nonsense('}')) {
         return _n;
     }
-    bool _first = true;
-    while (_first ^ after_nonsense(',')) {
+    for (bool _first = true; _first ^ after_nonsense(','); _first = false) {
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
             return _kr;
@@ -128,7 +125,6 @@ auto loader::parse_object() -> tl::expected<node, error_code> {
             return _r;
         }
         _n.insert(_k, _r.value());
-        _first = false;
     }
     if (!after_nonsense('}')) {
         return tl::unexpected(0);
