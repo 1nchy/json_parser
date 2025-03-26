@@ -66,7 +66,7 @@ loader::loader(const std::string& _json) : _json(_json) {
 /**
  * @brief parse an array (*_ptr == '[')
  * @implements
- * while [ or ,
+ * while ,
  *   if [ parse_aray
  *   elif { parse_object
  *   else try each fsm
@@ -91,10 +91,8 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
 }
 /**
  * @brief parse an object (*_ptr == '{')
- * @details
- * current pointer must point to '{'
  * @implements
- * while { or ,
+ * while ,
  *   parse string key
  *   parse colon
  *   if [ parse_aray
