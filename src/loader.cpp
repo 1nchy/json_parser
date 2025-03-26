@@ -72,9 +72,7 @@ loader::loader(const std::string& _json) : _json(_json) {
  *   else try each fsm
  */
 auto loader::parse_array() -> tl::expected<node, bad_content> {
-    if (after_nonsense('[')) {
-        return tl::unexpected(bad_content("unknown error"));
-    }
+    // last character is '['
     node _n(array{});
     if (after_nonsense(']')) {
         return _n;
@@ -104,9 +102,7 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
  *   else try each fsm
  */
 auto loader::parse_object() -> tl::expected<node, bad_content> {
-    if (after_nonsense('{')) {
-        return tl::unexpected(bad_content("unknown error"));
-    }
+    // last character is '{'
     node _n(object{});
     if (after_nonsense('}')) {
         return _n;
@@ -139,22 +135,14 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
     if (!skip_nonsense()) {
         return tl::unexpected(bad_content("too little content"));
     }
-    node _n;
     if (after_nonsense('[')) {
-        auto _r = parse_array();
-        if (!_r.has_value()) {
-            return _r;
-        }
-        _n = _r.value();
+        return parse_array();
     }
     else if (after_nonsense('{')) {
-        auto _r = parse_object();
-        if (_r.has_value()) {
-            return _r;
-        }
-        _n = _r.value();
+        return parse_object();
     }
     else {
+        node _n;
         if (auto _r = parse_normal_value(_boolean_fsm)) {
             _n = _r.value();
         }
@@ -170,16 +158,16 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
         else {
             return tl::unexpected(bad_content("invalid value"));
         }
+        return _n;
     }
-    return _n;
 }
 auto loader::operator()() -> node {
     _ptr = _json.cbegin();
     auto _r = parse_value();
-    if (skip_nonsense()) {
-        throw bad_content("too much content");
-    }
     if (_r.has_value()) {
+        if (skip_nonsense()) {
+            throw bad_content("too much content");
+        }
         return _r.value();
     }
     throw _r.error();
