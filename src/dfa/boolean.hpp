@@ -1,5 +1,5 @@
-#ifndef _ICY_JSON_PARSER_SRC_BOOLEAN_HPP_
-#define _ICY_JSON_PARSER_SRC_BOOLEAN_HPP_
+#ifndef _ICY_JSON_PARSER_SRC_DFA_BOOLEAN_HPP_
+#define _ICY_JSON_PARSER_SRC_DFA_BOOLEAN_HPP_
 
 #include "json_parser.hpp"
 #include "finite_state_machine.hpp"
@@ -75,4 +75,4 @@ struct boolean_state::E : public boolean_state {
 
 }
 
-#endif // _ICY_JSON_PARSER_SRC_BOOLEAN_HPP_
+#endif // _ICY_JSON_PARSER_SRC_DFA_BOOLEAN_HPP_

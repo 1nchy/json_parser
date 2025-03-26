@@ -1,10 +1,10 @@
 #ifndef _ICY_JSON_PARSER_SRC_LOADER_HPP_
 #define _ICY_JSON_PARSER_SRC_LOADER_HPP_
 
-#include "boolean.hpp"
-#include "floating_point.hpp"
-#include "integer.hpp"
-#include "string.hpp"
+#include "dfa/boolean.hpp"
+#include "dfa/floating_point.hpp"
+#include "dfa/integer.hpp"
+#include "dfa/string.hpp"
 
 #include "tl/expected.hpp"
 

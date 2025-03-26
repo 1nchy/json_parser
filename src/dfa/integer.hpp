@@ -1,5 +1,5 @@
-#ifndef _ICY_JSON_PARSER_SRC_INTEGER_HPP_
-#define _ICY_JSON_PARSER_SRC_INTEGER_HPP_
+#ifndef _ICY_JSON_PARSER_SRC_DFA_INTEGER_HPP_
+#define _ICY_JSON_PARSER_SRC_DFA_INTEGER_HPP_
 
 #include "json_parser.hpp"
 #include "finite_state_machine.hpp"
@@ -50,4 +50,4 @@ struct integer_state::CD : public integer_state {
 
 }
 
-#endif // _ICY_JSON_PARSER_SRC_INTEGER_HPP_
+#endif // _ICY_JSON_PARSER_SRC_DFA_INTEGER_HPP_

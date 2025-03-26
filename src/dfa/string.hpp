@@ -1,5 +1,5 @@
-#ifndef _ICY_JSON_PARSER_SRC_STRING_HPP_
-#define _ICY_JSON_PARSER_SRC_STRING_HPP_
+#ifndef _ICY_JSON_PARSER_SRC_DFA_STRING_HPP_
+#define _ICY_JSON_PARSER_SRC_DFA_STRING_HPP_
 
 #include "json_parser.hpp"
 #include "finite_state_machine.hpp"
@@ -62,4 +62,4 @@ struct string_state::F : public string_state {
 
 }
 
-#endif // _ICY_JSON_PARSER_SRC_STRING_HPP_
+#endif // _ICY_JSON_PARSER_SRC_DFA_STRING_HPP_

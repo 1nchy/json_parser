@@ -1,5 +1,5 @@
-#ifndef _ICY_JSON_PARSER_SRC_FLOATING_POINT_HPP_
-#define _ICY_JSON_PARSER_SRC_FLOATING_POINT_HPP_
+#ifndef _ICY_JSON_PARSER_SRC_DFA_FLOATING_POINT_HPP_
+#define _ICY_JSON_PARSER_SRC_DFA_FLOATING_POINT_HPP_
 
 #include "json_parser.hpp"
 #include "finite_state_machine.hpp"
@@ -66,4 +66,4 @@ struct floating_point_state::E : public floating_point_state {
 
 }
 
-#endif // _ICY_JSON_PARSER_SRC_FLOATING_POINT_HPP_
+#endif // _ICY_JSON_PARSER_SRC_DFA_FLOATING_POINT_HPP_
