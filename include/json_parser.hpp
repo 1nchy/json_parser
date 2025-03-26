@@ -41,10 +41,13 @@ public:
     template <size_t _L> auto operator[](const char (&)[_L]) const -> const node&;
     auto operator[](size_t) -> node&;
     auto operator[](size_t) const -> const node&;
-    void insert(const node&);
-    void insert(node&&);
+    void push(const node&);
+    void push(node&&);
+    void pop();
     void insert(const string&, const node&);
     void insert(const string&, node&&);
+    void erase(const string&);
+    void clear();
     auto value() -> value_type&;
     auto value() const -> const value_type&;
     template<typename _Tp> auto value() -> _Tp&;
@@ -58,7 +61,7 @@ auto dump(const node& _n) -> std::string;
 
 template <size_t _L> auto node::operator[](const char (&_k)[_L]) -> node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
-        return _ptr->at(string(_k));
+        return (*_ptr)[string(_k)];
     }
     throw std::runtime_error("not an object");
 }

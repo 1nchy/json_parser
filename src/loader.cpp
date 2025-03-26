@@ -84,7 +84,7 @@ auto loader::parse_array() -> tl::expected<node, error_code> {
         if (!_r.has_value()) {
             return _r;
         }
-        _n.insert(_r.value());
+        _n.push(_r.value());
     }
     if (!after_nonsense(']')) {
         return tl::unexpected(0);

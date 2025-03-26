@@ -13,7 +13,11 @@ int main(void) {
     const auto _platform = _config["configurations"][0]["name"].value<json::string>();
     const auto _1st_std = _config["configurations"][0]["supported_standard"][0].value<json::integer>();
     const auto _version = _config["version"].value<json::floating_point>();
-    _config["configurations"][0]["name"].value<json::string>() = "Ubuntu";
+    _config["configurations"][0]["name"] = "Ubuntu";
+    _config["configurations"][0]["includePath"].clear();
+    _config["configurations"][0]["includePath"] = "/usr/include";
+    _config["configurations"][0].erase("supported_standard");
+    _config["configurations"][0]["lastest_standard"] = "c++20";
     const std::string _new_json = json::dump(_config);
     std::cout << _new_json << std::endl;
     return 0;

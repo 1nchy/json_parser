@@ -46,16 +46,23 @@ auto node::operator[](size_t _i) const -> const node& {
 }
 
 
-void node::insert(const node& _n) {
+void node::push(const node& _n) {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(_n);
         return;
     }
     throw std::runtime_error("not an array");
 }
-void node::insert(node&& _n) {
+void node::push(node&& _n) {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(std::move(_n));
+        return;
+    }
+    throw std::runtime_error("not an array");
+}
+void node::pop() {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        _ptr->pop_back();
         return;
     }
     throw std::runtime_error("not an array");
@@ -70,6 +77,24 @@ void node::insert(const string& _k, const node& _n) {
 void node::insert(const string& _k, node&& _n) {
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, std::move(_n)});
+        return;
+    }
+    throw std::runtime_error("not an object");
+}
+void node::erase(const string& _k) {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        _ptr->erase(_k);
+        return;
+    }
+    throw std::runtime_error("not an object");
+}
+void node::clear() {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        _ptr->clear();
+        return;
+    }
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        _ptr->clear();
         return;
     }
     throw std::runtime_error("not an object");
