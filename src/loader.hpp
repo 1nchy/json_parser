@@ -32,7 +32,7 @@ public:
     auto parse_array() -> tl::expected<node, error_code>;
     auto parse_object() -> tl::expected<node, error_code>;
     auto parse_value() -> tl::expected<node, error_code>;
-    auto value() -> node;
+    auto operator()() -> node;
 private:
     /**
      * @brief skip blank and control character in json

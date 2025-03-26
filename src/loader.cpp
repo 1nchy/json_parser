@@ -177,7 +177,7 @@ auto loader::parse_value() -> tl::expected<node, error_code> {
     }
     return _n;
 }
-auto loader::value() -> node {
+auto loader::operator()() -> node {
     _ptr = _json.cbegin();
     if (auto _r = parse_value()) {
         return _r.value();

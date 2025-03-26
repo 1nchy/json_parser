@@ -1,6 +1,7 @@
 #include "json_parser.hpp"
 
 #include "loader.hpp"
+#include "dumper.hpp"
 
 namespace icy {
 
@@ -83,10 +84,11 @@ auto node::value() const -> const value_type& {
 
 auto load(const std::string& _s) -> node {
     loader _loader(_s);
-    return _loader.value();
+    return _loader();
 }
 auto dump(const node& _n) -> std::string {
-    return "";
+    dumper _dumper(_n);
+    return _dumper();
 }
 
 }
