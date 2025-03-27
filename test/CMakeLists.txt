@@ -20,3 +20,4 @@ macro(icy_add_test case_name)
 endmacro(icy_add_test)
 
 icy_add_test(basic_json)
+icy_add_test(nested_json)
