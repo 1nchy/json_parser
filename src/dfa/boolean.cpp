@@ -33,7 +33,7 @@ auto boolean_state::X::handle(const fsm::character::lower_case& _e) -> label_typ
     if (_e.value() == 't') {
         return T::label();
     }
-    if (_e.value() == 'F') {
+    if (_e.value() == 'f') {
         return F::label();
     }
     _eof = true;
