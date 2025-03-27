@@ -161,6 +161,9 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
 }
 auto loader::operator()() -> node {
     _ptr = _json.cbegin();
+    if (!skip_nonsense()) { // empty content
+        return node(monostate{});
+    }
     auto _r = parse_value();
     if (_r.has_value()) {
         if (skip_nonsense()) {

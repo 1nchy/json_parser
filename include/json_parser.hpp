@@ -40,21 +40,23 @@ public:
     node(const value_type& _value);
     node(value_type&& _value);
     ~node() = default;
-    auto operator=(const node&) -> node& = default;
-    auto operator=(node&&) -> node& = default;
+    auto operator=(const node&) -> node&;
+    auto operator=(node&&) -> node&;
     auto operator=(const value_type&) -> node&;
     auto operator=(value_type&&) -> node&;
     auto operator[](const string&) -> node&;
     auto operator[](const string&) const -> const node&;
-    template <size_t _L> auto operator[](const char (&)[_L]) -> node&;
-    template <size_t _L> auto operator[](const char (&)[_L]) const -> const node&;
     auto operator[](size_t) -> node&;
     auto operator[](size_t) const -> const node&;
     void push(const node&);
     void push(node&&);
+    void push(const value_type&);
+    void push(value_type&&);
     void pop();
     void insert(const string&, const node&);
     void insert(const string&, node&&);
+    void insert(const string&, const value_type&);
+    void insert(const string&, value_type&&);
     void erase(const string&);
     void clear();
     auto value() -> value_type&;
@@ -151,18 +153,6 @@ auto dump(const node& _n) -> std::string;
 auto dump(const node& _n, std::ofstream& _ofs) -> void;
 
 
-template <size_t _L> auto node::operator[](const char (&_k)[_L]) -> node& {
-    if (auto _ptr = std::get_if<object>(&_value)) {
-        return (*_ptr)[string(_k)];
-    }
-    throw bad_cast("not an object");
-}
-template <size_t _L> auto node::operator[](const char (&_k)[_L]) const -> const node& {
-    if (auto _ptr = std::get_if<object>(&_value)) {
-        return _ptr->at(string(_k));
-    }
-    throw bad_cast("not an object");
-}
 template <typename _Tp> auto node::value() -> _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);

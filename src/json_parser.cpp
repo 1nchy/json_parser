@@ -10,11 +10,26 @@ namespace json {
 node::node() : _value(monostate()) {}
 node::node(const value_type& _value) : _value(_value) {}
 node::node(value_type&& _value) : _value(std::move(_value)) {}
+auto node::operator=(const node& _n) -> node& {
+    if (this == &_n) {
+        return *this;
+    }
+    return operator=(_n._value);
+}
+auto node::operator=(node&& _n) -> node& {
+    return operator=(std::move(_n._value));
+}
 auto node::operator=(const value_type& _value) -> node& {
+    if (std::holds_alternative<monostate>(_value)) {
+        throw bad_cast("no monostate assignment");
+    }
     this->_value = _value;
     return *this;
 }
 auto node::operator=(value_type&& _value) -> node& {
+    if (std::holds_alternative<monostate>(_value)) {
+        throw bad_cast("no monostate assignment");
+    }
     this->_value = std::move(_value);
     return *this;
 }
@@ -22,7 +37,7 @@ auto node::operator=(value_type&& _value) -> node& {
 
 auto node::operator[](const string& _k) -> node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
-        return _ptr->at(_k);
+        return (*_ptr)[_k];
     }
     throw bad_cast("not an object");
 }
@@ -60,6 +75,20 @@ void node::push(node&& _n) {
     }
     throw bad_cast("not an array");
 }
+void node::push(const value_type& _v) {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        _ptr->push_back(node(_v));
+        return;
+    }
+    throw bad_cast("not an array");
+}
+void node::push(value_type&& _v) {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        _ptr->push_back(node(std::move(_v)));
+        return;
+    }
+    throw bad_cast("not an array");
+}
 void node::pop() {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->pop_back();
@@ -77,6 +106,20 @@ void node::insert(const string& _k, const node& _n) {
 void node::insert(const string& _k, node&& _n) {
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, std::move(_n)});
+        return;
+    }
+    throw bad_cast("not an object");
+}
+void node::insert(const string& _k, const value_type& _v) {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        _ptr->insert({_k, node(_v)});
+        return;
+    }
+    throw bad_cast("not an object");
+}
+void node::insert(const string& _k, value_type&& _v) {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        _ptr->insert({_k, node(std::move(_v))});
         return;
     }
     throw bad_cast("not an object");

@@ -71,6 +71,9 @@ auto dumper::build_value(const node& _n) -> void {
 
 auto dumper::operator()() -> std::string {
     _ss.clear();
+    if (std::holds_alternative<monostate>(_json.value())) {
+        return "";
+    }
     build_value(_json);
     return _ss.str();
 }
