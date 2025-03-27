@@ -9,14 +9,12 @@ template <typename... _Args> void _M_to_directories(std::filesystem::path& _work
     _workspace /= _s;
     _M_to_directories(_workspace, std::forward<_Args>(_args)...);
 }
-
-}
-
-template <typename... _Args> auto from_workspace(const std::string& _workspace, _Args&&... _args) -> std::filesystem::path {
-    std::filesystem::path _dir = std::filesystem::current_path();
-    while (_dir.has_parent_path() && _dir.filename() != _workspace) {
-        _dir = _dir.parent_path();
-    }
+template <typename... _Args> auto _M_from_here(const std::string& _here, _Args&&... _args) -> std::filesystem::path {
+    std::filesystem::path _dir = std::filesystem::path(_here).parent_path();
     _M_to_directories(_dir, std::forward<_Args>(_args)...);
     return _dir;
 }
+
+}
+
+#define from_here(...) _M_from_here(__FILE__, __VA_ARGS__)
