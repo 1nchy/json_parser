@@ -1,8 +1,6 @@
 #include "main.hpp"
 #include "json_parser.hpp"
 
-#include <iostream>
-
 using namespace icy::json;
 
 int main(void) {
