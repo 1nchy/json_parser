@@ -35,6 +35,20 @@ auto node::operator=(value_type&& _value) -> node& {
 }
 
 
+auto node::operator==(const node& _rhs) const -> bool {
+    return this->_value == _rhs._value;
+}
+auto node::operator==(const value_type& _rhs) const -> bool {
+    return this->_value == _rhs;
+}
+auto node::operator!=(const node& _rhs) const -> bool {
+    return this->_value == _rhs._value;
+}
+auto node::operator!=(const value_type& _rhs) const -> bool {
+    return this->_value == _rhs;
+}
+
+
 auto node::operator[](const string& _k) -> node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
         return (*_ptr)[_k];

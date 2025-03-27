@@ -44,6 +44,10 @@ public:
     auto operator=(node&&) -> node&;
     auto operator=(const value_type&) -> node&;
     auto operator=(value_type&&) -> node&;
+    auto operator==(const node&) const -> bool;
+    auto operator==(const value_type&) const -> bool;
+    auto operator!=(const node&) const -> bool;
+    auto operator!=(const value_type&) const -> bool;
     auto operator[](const string&) -> node&;
     auto operator[](const string&) const -> const node&;
     auto operator[](size_t) -> node&;
