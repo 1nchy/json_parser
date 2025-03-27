@@ -117,18 +117,35 @@ bad_content::bad_content(const std::string& _msg) : exception(_msg) {}
 bad_content::bad_content(const char* _msg) : exception(_msg) {}
 bad_cast::bad_cast(const std::string& _msg) : exception(_msg) {}
 bad_cast::bad_cast(const char* _msg) : exception(_msg) {}
+bad_file::bad_file(const std::string& _msg) : exception(_msg) {}
+bad_file::bad_file(const char* _msg) : exception(_msg) {}
 // out_of_range::out_of_range(const std::string& _msg) : exception(_msg) {}
 // out_of_range::out_of_range(const char* _msg) : exception(_msg) {}
 
 
 
 auto load(const std::string& _s) -> node {
-    loader _loader(_s);
-    return _loader();
+    return loader(_s)();
+}
+auto load(std::ifstream& _ifs) -> node {
+    if (!_ifs.is_open()) {
+        throw bad_file("fail to load"); 
+    }
+    const std::string _json(
+        (std::istreambuf_iterator<char>(_ifs)),
+        std::istreambuf_iterator<char>()
+    );
+    return load(_json);
 }
 auto dump(const node& _n) -> std::string {
-    dumper _dumper(_n);
-    return _dumper();
+    return dumper(_n)();
+}
+auto dump(const node& _n, std::ofstream& _ofs) -> void {
+    if (!_ofs.is_open()) {
+        throw bad_file("fail to dump");
+    }
+    const std::string _json = dumper(_n)();
+    _ofs << _json;
 }
 
 }

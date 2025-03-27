@@ -7,6 +7,8 @@
 #include <variant>
 #include <vector>
 
+#include <fstream>
+
 #include <stdexcept>
 
 namespace icy {
@@ -27,6 +29,7 @@ using value_type = std::variant<monostate, boolean, integer, floating_point, str
 struct exception;
 struct bad_content;
 struct bad_cast;
+struct bad_file;
 // struct out_of_range;
 
 struct node {
@@ -98,6 +101,16 @@ public:
     bad_cast& operator=(bad_cast&&) noexcept = default;
     virtual ~bad_cast() noexcept = default;
 };
+struct bad_file : public exception {
+public:
+    explicit bad_file(const std::string&);
+    explicit bad_file(const char*);
+    bad_file(const bad_file&) noexcept = default;
+    bad_file(bad_file&&) noexcept = default;
+    bad_file& operator=(const bad_file&) noexcept = default;
+    bad_file& operator=(bad_file&&) noexcept = default;
+    virtual ~bad_file() noexcept = default;
+};
 
 // struct out_of_range : public exception {
 // public:
@@ -118,11 +131,24 @@ public:
  */
 auto load(const std::string& _s) -> node;
 /**
+ * @brief load file stream to json
+ * @param _ifs json file input stream
+ * @return json node
+ * @throw bad_content
+ */
+auto load(std::ifstream& _ifs) -> node;
+/**
  * @brief dump json to string
  * @param _n json node
  * @return ascii string
  */
 auto dump(const node& _n) -> std::string;
+/**
+ * @brief dump json to file stream
+ * @param _ofs json file output stream
+ * @return ascii string
+ */
+auto dump(const node& _n, std::ofstream& _ofs) -> void;
 
 
 template <size_t _L> auto node::operator[](const char (&_k)[_L]) -> node& {
