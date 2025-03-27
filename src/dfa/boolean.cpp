@@ -30,6 +30,7 @@ auto boolean_state::value() const -> type {
 }
 
 auto boolean_state::X::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 't') {
         return T::label();
     }
@@ -40,6 +41,7 @@ auto boolean_state::X::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::F::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 'a') {
         return A::label();
     }
@@ -47,6 +49,7 @@ auto boolean_state::F::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::A::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 'l') {
         return L::label();
     }
@@ -54,6 +57,7 @@ auto boolean_state::A::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::L::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 's') {
         return S::label();
     }
@@ -61,6 +65,7 @@ auto boolean_state::L::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::S::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 'e') {
         return E::label();
     }
@@ -68,6 +73,7 @@ auto boolean_state::S::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::T::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 'r') {
         return R::label();
     }
@@ -75,6 +81,7 @@ auto boolean_state::T::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::R::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 'u') {
         return U::label();
     }
@@ -82,6 +89,7 @@ auto boolean_state::R::handle(const fsm::character::lower_case& _e) -> label_typ
     return state::label();
 }
 auto boolean_state::U::handle(const fsm::character::lower_case& _e) -> label_type {
+    _str.push_back(_e.value());
     if (_e.value() == 'e') {
         return E::label();
     }

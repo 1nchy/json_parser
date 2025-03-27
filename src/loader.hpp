@@ -63,8 +63,8 @@ loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, bad_co
         return tl::unexpected(bad_content("too little content"));
     }
     _fsm.restart();
-    for (auto _i = _ptr; _i != _json.cend(); ++_i) {
-        if (!fsm::character::handle(_fsm, *_i)) {
+    for (auto _i = _ptr; ; ++_i) {
+        if (_i == _json.cend() || !fsm::character::handle(_fsm, *_i)) {
             if (_fsm.acceptable()) {
                 _ptr = _i;
                 return node(_fsm.state()->value());
