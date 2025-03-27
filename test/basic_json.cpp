@@ -13,7 +13,7 @@ int main(void) {
     icy_assert(load("+3.001").value<floating_point>() == 3.001);
     icy_assert(load("-153.00").value<floating_point>() == -153.00);
     icy_assert(load("\"1nchy\"").value<string>() == "1nchy");
-    // icy_assert(load("\"arch\tlinux\"").value<string>() == string("arch\tlinux"));
-    // icy_assert(load("\"c++ ?\nc with class !\"").value<string>() == "c++ ?\\nc with class !");
+    icy_assert(load("\"arch\\tlinux\"").value<string>() == "arch\tlinux");
+    icy_assert(load("\"c++ ?\\nc with class !\"").value<string>() == "c++ ?\nc with class !");
     return 0;
 }
