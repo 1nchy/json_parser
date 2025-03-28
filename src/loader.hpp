@@ -60,7 +60,7 @@ private:
 template <typename _St> auto
 loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, bad_content> {
     if (!skip_nonsense()) {
-        return tl::unexpected(bad_content("too little content"));
+        return tl::unexpected(bad_content("value expected"));
     }
     _fsm.restart();
     for (auto _i = _ptr; ; ++_i) {
@@ -70,11 +70,11 @@ loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, bad_co
                 return node(_fsm.state()->value());
             }
             else {
-                return tl::unexpected(bad_content("invalid value"));
+                return tl::unexpected(bad_content("value expected"));
             }
         }
     }
-    return tl::unexpected(bad_content("invalid value"));
+    return tl::unexpected(bad_content("value expected"));
 }
 
 }

@@ -77,15 +77,17 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
     if (after_nonsense(']')) {
         return _n;
     }
-    for (bool _first = true; _first ^ after_nonsense(','); _first = false) {
+    bool _first = true;
+    while (_first ^ after_nonsense(',')) {
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
         }
         _n.push(_r.value());
+        _first = false;
     }
     if (!after_nonsense(']')) {
-        return tl::unexpected(bad_content("invalid array"));
+        return tl::unexpected(bad_content(_first ? "right square expected" : "trailing comma"));
     }
     return _n;
 }
@@ -105,23 +107,25 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
     if (after_nonsense('}')) {
         return _n;
     }
-    for (bool _first = true; _first ^ after_nonsense(','); _first = false) {
+    bool _first = true;
+    while (_first ^ after_nonsense(',')) {
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
             return _kr;
         }
         const auto _k = std::get<string>(_kr.value().value());
         if (!after_nonsense(':')) {
-            return tl::unexpected(bad_content("valid object"));
+            return tl::unexpected(bad_content("colon expected"));
         }
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
         }
         _n.insert(_k, _r.value());
+        _first = false;
     }
     if (!after_nonsense('}')) {
-        return tl::unexpected(bad_content("valid object"));
+        return tl::unexpected(bad_content(_first ? "right curly expected" : "trailing comma"));
     }
     return _n;
 }
@@ -131,7 +135,7 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
  */
 auto loader::parse_value() -> tl::expected<node, bad_content> {
     if (!skip_nonsense()) {
-        return tl::unexpected(bad_content("too little content"));
+        return tl::unexpected(bad_content("value expected"));
     }
     if (after_nonsense('[')) {
         return parse_array();
@@ -154,7 +158,7 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
             _n = _r.value();
         }
         else {
-            return tl::unexpected(bad_content("invalid value"));
+            return tl::unexpected(bad_content("value expected"));
         }
         return _n;
     }
@@ -167,7 +171,7 @@ auto loader::operator()() -> node {
     auto _r = parse_value();
     if (_r.has_value()) {
         if (skip_nonsense()) {
-            throw bad_content("too much content");
+            throw bad_content("end of file expected");
         }
         return _r.value();
     }
