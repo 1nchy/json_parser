@@ -111,7 +111,7 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
     while (_first ^ after_nonsense(',')) {
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
-            return _kr;
+            return tl::unexpected(bad_content("string key expected"));
         }
         const auto _k = std::get<string>(_kr.value().value());
         if (!after_nonsense(':')) {
