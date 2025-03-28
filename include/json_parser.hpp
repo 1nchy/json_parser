@@ -63,6 +63,7 @@ public:
     void insert(const string&, value_type&&);
     void erase(const string&);
     void clear();
+    auto size() const -> size_t;
     auto value() -> value_type&;
     auto value() const -> const value_type&;
     template<typename _Tp> auto value() -> _Tp&;

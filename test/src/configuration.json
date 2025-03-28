@@ -1,1 +1,30 @@
-[]
+{
+    "configurations": {
+        "nested_array": [[0],1,[2,[3],[]]],
+        "escape": {
+            "": "",
+            "t": "\t",
+            "n": "\n"
+        }
+    },
+    "cxx_standard": [
+        99, 11, 14, 17, 20
+    ],
+    "cmake_build_type": "Release",
+    "include_directories": [
+        "/usr/include",
+        "${workspaceFolder}/include",
+        "${workspaceFolder}/third/*/include"
+    ],
+    "link_directories": [
+        "/usr/lib",
+        "${workspaceFolder}/lib",
+        "${workspaceFolder}/third/*/lib"
+    ],
+    "project": "json\tparser",
+    "third": [
+        "1nchy/finite_state_machine",
+        "tl/expected"
+    ],
+    "version": 1
+}

@@ -76,6 +76,10 @@ auto node::operator[](size_t _i) const -> const node& {
 
 
 void node::push(const node& _n) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = array()).push(_n);
+        return;
+    }
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(_n);
         return;
@@ -83,6 +87,10 @@ void node::push(const node& _n) {
     throw bad_cast("not an array");
 }
 void node::push(node&& _n) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = array()).push(std::move(_n));
+        return;
+    }
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(std::move(_n));
         return;
@@ -90,6 +98,10 @@ void node::push(node&& _n) {
     throw bad_cast("not an array");
 }
 void node::push(const value_type& _v) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = array()).push(_v);
+        return;
+    }
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(node(_v));
         return;
@@ -97,6 +109,10 @@ void node::push(const value_type& _v) {
     throw bad_cast("not an array");
 }
 void node::push(value_type&& _v) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = array()).push(std::move(_v));
+        return;
+    }
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->push_back(node(std::move(_v)));
         return;
@@ -104,6 +120,9 @@ void node::push(value_type&& _v) {
     throw bad_cast("not an array");
 }
 void node::pop() {
+    if (std::holds_alternative<monostate>(_value)) {
+        return;
+    }
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->pop_back();
         return;
@@ -111,6 +130,10 @@ void node::pop() {
     throw bad_cast("not an array");
 }
 void node::insert(const string& _k, const node& _n) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = object()).insert(_k, _n);
+        return;
+    }
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, _n});
         return;
@@ -118,6 +141,10 @@ void node::insert(const string& _k, const node& _n) {
     throw bad_cast("not an object");
 }
 void node::insert(const string& _k, node&& _n) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = object()).insert(_k, std::move(_n));
+        return;
+    }
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, std::move(_n)});
         return;
@@ -125,6 +152,10 @@ void node::insert(const string& _k, node&& _n) {
     throw bad_cast("not an object");
 }
 void node::insert(const string& _k, const value_type& _v) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = object()).insert(_k, _v);
+        return;
+    }
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, node(_v)});
         return;
@@ -132,6 +163,10 @@ void node::insert(const string& _k, const value_type& _v) {
     throw bad_cast("not an object");
 }
 void node::insert(const string& _k, value_type&& _v) {
+    if (std::holds_alternative<monostate>(_value)) {
+        (*this = object()).insert(_k, std::move(_v));
+        return;
+    }
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->insert({_k, node(std::move(_v))});
         return;
@@ -139,6 +174,9 @@ void node::insert(const string& _k, value_type&& _v) {
     throw bad_cast("not an object");
 }
 void node::erase(const string& _k) {
+    if (std::holds_alternative<monostate>(_value)) {
+        return;
+    }
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->erase(_k);
         return;
@@ -146,6 +184,9 @@ void node::erase(const string& _k) {
     throw bad_cast("not an object");
 }
 void node::clear() {
+    if (std::holds_alternative<monostate>(_value)) {
+        return;
+    }
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->clear();
         return;
@@ -153,6 +194,18 @@ void node::clear() {
     if (auto _ptr = std::get_if<object>(&_value)) {
         _ptr->clear();
         return;
+    }
+    throw bad_cast("not an object or array");
+}
+auto node::size() const -> size_t {
+    if (std::holds_alternative<monostate>(_value)) {
+        return 0;
+    }
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->size();
+    }
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->size();
     }
     throw bad_cast("not an object or array");
 }
