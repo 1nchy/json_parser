@@ -42,10 +42,10 @@ auto node::operator==(const value_type& _rhs) const -> bool {
     return this->_value == _rhs;
 }
 auto node::operator!=(const node& _rhs) const -> bool {
-    return this->_value == _rhs._value;
+    return this->_value != _rhs._value;
 }
 auto node::operator!=(const value_type& _rhs) const -> bool {
-    return this->_value == _rhs;
+    return this->_value != _rhs;
 }
 
 
