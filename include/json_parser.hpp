@@ -88,6 +88,9 @@ private:
     std::string _msg;
 };
 
+/**
+ * @brief exception in loading json string
+ */
 struct bad_content : public exception {
 public:
     explicit bad_content(const std::string&);
@@ -98,7 +101,9 @@ public:
     bad_content& operator=(bad_content&&) noexcept = default;
     virtual ~bad_content() noexcept = default;
 };
-
+/**
+ * @brief exception in type casting
+ */
 struct bad_cast : public exception {
 public:
     explicit bad_cast(const std::string&);
@@ -109,6 +114,9 @@ public:
     bad_cast& operator=(bad_cast&&) noexcept = default;
     virtual ~bad_cast() noexcept = default;
 };
+/**
+ * @brief exception in dumping json to file
+ */
 struct bad_file : public exception {
 public:
     explicit bad_file(const std::string&);
@@ -119,6 +127,9 @@ public:
     bad_file& operator=(bad_file&&) noexcept = default;
     virtual ~bad_file() noexcept = default;
 };
+/**
+ * @brief exception in dumping json node
+ */
 struct bad_json : public exception {
 public:
     explicit bad_json(const std::string&);
@@ -153,18 +164,22 @@ auto load(const std::string& _s) -> node;
  * @param _ifs json file input stream
  * @return json node
  * @throw bad_content
+ * @throw bad_file
  */
 auto load(std::ifstream& _ifs) -> node;
 /**
  * @brief dump json to string
  * @param _n json node
  * @return ascii string
+ * @throw bad_json
  */
 auto dump(const node& _n) -> std::string;
 /**
  * @brief dump json to file stream
  * @param _ofs json file output stream
  * @return ascii string
+ * @throw bad_json
+ * @throw bad_file
  */
 auto dump(const node& _n, std::ofstream& _ofs) -> void;
 
