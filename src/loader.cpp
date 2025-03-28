@@ -6,6 +6,8 @@ namespace icy {
 
 namespace json {
 
+using namespace literal;
+
 loader::loader(const std::string& _json) : _json(_json) {
     _boolean_fsm.enroll<
         boolean_state::X,
@@ -78,7 +80,7 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
         return _n;
     }
     bool _first = true;
-    while (_first ^ after_nonsense(',')) {
+    while (skip_nonsense() && (_first ^ after_nonsense(','))) {
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
@@ -87,7 +89,9 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
         _first = false;
     }
     if (!after_nonsense(']')) {
-        return tl::unexpected(bad_content(_first ? "right square expected" : "trailing comma"));
+        return tl::unexpected(
+            bad_content(_first ? right_square_expected : trailing_comma)
+        );
     }
     return _n;
 }
@@ -108,14 +112,14 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
         return _n;
     }
     bool _first = true;
-    while (_first ^ after_nonsense(',')) {
+    while (skip_nonsense() && (_first ^ after_nonsense(','))) {
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
-            return tl::unexpected(bad_content("string key expected"));
+            return tl::unexpected(bad_content(string_key_expected));
         }
         const auto _k = std::get<string>(_kr.value().value());
         if (!after_nonsense(':')) {
-            return tl::unexpected(bad_content("colon expected"));
+            return tl::unexpected(bad_content(colon_expected));
         }
         auto _r = parse_value();
         if (!_r.has_value()) {
@@ -125,7 +129,9 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
         _first = false;
     }
     if (!after_nonsense('}')) {
-        return tl::unexpected(bad_content(_first ? "right curly expected" : "trailing comma"));
+        return tl::unexpected(
+            bad_content(_first ? right_curly_expected : trailing_comma)
+        );
     }
     return _n;
 }
@@ -135,7 +141,7 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
  */
 auto loader::parse_value() -> tl::expected<node, bad_content> {
     if (!skip_nonsense()) {
-        return tl::unexpected(bad_content("value expected"));
+        return tl::unexpected(bad_content(value_expected));
     }
     if (after_nonsense('[')) {
         return parse_array();
@@ -158,7 +164,7 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
             _n = _r.value();
         }
         else {
-            return tl::unexpected(bad_content("value expected"));
+            return tl::unexpected(bad_content(value_expected));
         }
         return _n;
     }
@@ -171,7 +177,7 @@ auto loader::operator()() -> node {
     auto _r = parse_value();
     if (_r.has_value()) {
         if (skip_nonsense()) {
-            throw bad_content("end of file expected");
+            throw bad_content(end_of_file_expected);
         }
         return _r.value();
     }

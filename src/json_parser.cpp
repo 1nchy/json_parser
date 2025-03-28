@@ -7,6 +7,8 @@ namespace icy {
 
 namespace json {
 
+using namespace literal;
+
 node::node() : _value(monostate()) {}
 node::node(const value_type& _value) : _value(_value) {}
 node::node(value_type&& _value) : _value(std::move(_value)) {}
@@ -21,14 +23,14 @@ auto node::operator=(node&& _n) -> node& {
 }
 auto node::operator=(const value_type& _value) -> node& {
     if (std::holds_alternative<monostate>(_value)) {
-        throw bad_cast("no monostate assignment");
+        throw bad_cast(no_monostate_assignment);
     }
     this->_value = _value;
     return *this;
 }
 auto node::operator=(value_type&& _value) -> node& {
     if (std::holds_alternative<monostate>(_value)) {
-        throw bad_cast("no monostate assignment");
+        throw bad_cast(no_monostate_assignment);
     }
     this->_value = std::move(_value);
     return *this;
@@ -53,25 +55,25 @@ auto node::operator[](const string& _k) -> node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
         return (*_ptr)[_k];
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 auto node::operator[](const string& _k) const -> const node& {
     if (auto _ptr = std::get_if<object>(&_value)) {
         return _ptr->at(_k);
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 auto node::operator[](size_t _i) -> node& {
     if (auto _ptr = std::get_if<array>(&_value)) {
         return _ptr->at(_i);
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 auto node::operator[](size_t _i) const -> const node& {
     if (auto _ptr = std::get_if<array>(&_value)) {
         return _ptr->at(_i);
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 
 
@@ -84,7 +86,7 @@ void node::push(const node& _n) {
         _ptr->push_back(_n);
         return;
     }
-    throw bad_cast("not an array");
+    throw bad_cast(not_an_array);
 }
 void node::push(node&& _n) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -95,7 +97,7 @@ void node::push(node&& _n) {
         _ptr->push_back(std::move(_n));
         return;
     }
-    throw bad_cast("not an array");
+    throw bad_cast(not_an_array);
 }
 void node::push(const value_type& _v) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -106,7 +108,7 @@ void node::push(const value_type& _v) {
         _ptr->push_back(node(_v));
         return;
     }
-    throw bad_cast("not an array");
+    throw bad_cast(not_an_array);
 }
 void node::push(value_type&& _v) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -117,7 +119,7 @@ void node::push(value_type&& _v) {
         _ptr->push_back(node(std::move(_v)));
         return;
     }
-    throw bad_cast("not an array");
+    throw bad_cast(not_an_array);
 }
 void node::pop() {
     if (std::holds_alternative<monostate>(_value)) {
@@ -127,7 +129,7 @@ void node::pop() {
         _ptr->pop_back();
         return;
     }
-    throw bad_cast("not an array");
+    throw bad_cast(not_an_array);
 }
 void node::insert(const string& _k, const node& _n) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -138,7 +140,7 @@ void node::insert(const string& _k, const node& _n) {
         _ptr->insert({_k, _n});
         return;
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 void node::insert(const string& _k, node&& _n) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -149,7 +151,7 @@ void node::insert(const string& _k, node&& _n) {
         _ptr->insert({_k, std::move(_n)});
         return;
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 void node::insert(const string& _k, const value_type& _v) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -160,7 +162,7 @@ void node::insert(const string& _k, const value_type& _v) {
         _ptr->insert({_k, node(_v)});
         return;
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 void node::insert(const string& _k, value_type&& _v) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -171,7 +173,7 @@ void node::insert(const string& _k, value_type&& _v) {
         _ptr->insert({_k, node(std::move(_v))});
         return;
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 void node::erase(const string& _k) {
     if (std::holds_alternative<monostate>(_value)) {
@@ -181,7 +183,7 @@ void node::erase(const string& _k) {
         _ptr->erase(_k);
         return;
     }
-    throw bad_cast("not an object");
+    throw bad_cast(not_an_object);
 }
 void node::clear() {
     if (std::holds_alternative<monostate>(_value)) {
@@ -195,7 +197,7 @@ void node::clear() {
         _ptr->clear();
         return;
     }
-    throw bad_cast("not an object or array");
+    throw bad_cast(not_an_array_or_object);
 }
 auto node::size() const -> size_t {
     if (std::holds_alternative<monostate>(_value)) {
@@ -207,7 +209,7 @@ auto node::size() const -> size_t {
     if (auto _ptr = std::get_if<object>(&_value)) {
         return _ptr->size();
     }
-    throw bad_cast("not an object or array");
+    throw bad_cast(not_an_array_or_object);
 }
 auto node::value() -> value_type& {
     return _value;
@@ -227,12 +229,8 @@ bad_content::bad_content(const std::string& _msg) : exception(_msg) {}
 bad_content::bad_content(const char* _msg) : exception(_msg) {}
 bad_cast::bad_cast(const std::string& _msg) : exception(_msg) {}
 bad_cast::bad_cast(const char* _msg) : exception(_msg) {}
-bad_file::bad_file(const std::string& _msg) : exception(_msg) {}
-bad_file::bad_file(const char* _msg) : exception(_msg) {}
 bad_json::bad_json(const std::string& _msg) : exception(_msg) {}
 bad_json::bad_json(const char* _msg) : exception(_msg) {}
-// out_of_range::out_of_range(const std::string& _msg) : exception(_msg) {}
-// out_of_range::out_of_range(const char* _msg) : exception(_msg) {}
 
 
 
@@ -240,9 +238,6 @@ auto load(const std::string& _s) -> node {
     return loader(_s)();
 }
 auto load(std::ifstream& _ifs) -> node {
-    if (!_ifs.is_open()) {
-        throw bad_file("fail to load"); 
-    }
     const std::string _json(
         (std::istreambuf_iterator<char>(_ifs)),
         std::istreambuf_iterator<char>()
@@ -253,9 +248,6 @@ auto dump(const node& _n) -> std::string {
     return dumper(_n)();
 }
 auto dump(const node& _n, std::ofstream& _ofs) -> void {
-    if (!_ofs.is_open()) {
-        throw bad_file("fail to dump");
-    }
     const std::string _json = dumper(_n)();
     _ofs << _json;
 }

@@ -29,9 +29,7 @@ using value_type = std::variant<monostate, boolean, integer, floating_point, str
 struct exception;
 struct bad_content;
 struct bad_cast;
-struct bad_file;
 struct bad_json;
-// struct out_of_range;
 
 struct node {
 public:
@@ -115,19 +113,6 @@ public:
     virtual ~bad_cast() noexcept = default;
 };
 /**
- * @brief exception in dumping json to file
- */
-struct bad_file : public exception {
-public:
-    explicit bad_file(const std::string&);
-    explicit bad_file(const char*);
-    bad_file(const bad_file&) noexcept = default;
-    bad_file(bad_file&&) noexcept = default;
-    bad_file& operator=(const bad_file&) noexcept = default;
-    bad_file& operator=(bad_file&&) noexcept = default;
-    virtual ~bad_file() noexcept = default;
-};
-/**
  * @brief exception in dumping json node
  */
 struct bad_json : public exception {
@@ -141,16 +126,6 @@ public:
     virtual ~bad_json() noexcept = default;
 };
 
-// struct out_of_range : public exception {
-// public:
-//     explicit out_of_range(const std::string&);
-//     explicit out_of_range(const char*);
-//     out_of_range(const out_of_range&) noexcept = default;
-//     out_of_range(out_of_range&&) noexcept = default;
-//     out_of_range& operator=(const out_of_range&) noexcept = default;
-//     out_of_range& operator=(out_of_range&&) noexcept = default;
-//     virtual ~out_of_range() noexcept = default;
-// };
 
 /**
  * @brief load string to json
@@ -164,7 +139,6 @@ auto load(const std::string& _s) -> node;
  * @param _ifs json file input stream
  * @return json node
  * @throw bad_content
- * @throw bad_file
  */
 auto load(std::ifstream& _ifs) -> node;
 /**
@@ -179,22 +153,42 @@ auto dump(const node& _n) -> std::string;
  * @param _ofs json file output stream
  * @return ascii string
  * @throw bad_json
- * @throw bad_file
  */
 auto dump(const node& _n, std::ofstream& _ofs) -> void;
+
+
+namespace literal {
+
+constexpr const char* right_curly_expected = "right curly expected";
+constexpr const char* right_square_expected = "right square expected";
+constexpr const char* trailing_comma = "trailing comma";
+constexpr const char* colon_expected = "colon expected";
+constexpr const char* value_expected = "value expected";
+constexpr const char* string_key_expected = "string key expected";
+constexpr const char* end_of_file_expected = "end of file expected";
+
+constexpr const char* not_the_type = "not the type";
+constexpr const char* not_an_object = "not an object";
+constexpr const char* not_an_array = "not an array";
+constexpr const char* not_an_array_or_object = "not an array or object";
+constexpr const char* no_monostate_assignment = "no monostate assignment";
+
+constexpr const char* no_monostate_dump = "no monostate dump";
+
+}
 
 
 template <typename _Tp> auto node::value() -> _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);
     }
-    throw bad_cast(std::string("not a/an ") + typeid(_Tp).name());
+    throw bad_cast(literal::not_the_type);
 }
 template <typename _Tp> auto node::value() const -> const _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);
     }
-    throw bad_cast(std::string("not a/an ") + typeid(_Tp).name());
+    throw bad_cast(literal::not_the_type);
 }
 
 }

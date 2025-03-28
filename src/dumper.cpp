@@ -6,6 +6,8 @@ namespace icy {
 
 namespace json {
 
+using namespace literal;
+
 dumper::dumper(const node& _json) : _json(_json) {}
 
 auto dumper::build_boolean(const node& _n) -> void {
@@ -68,7 +70,7 @@ auto dumper::build_value(const node& _n) -> void {
         return build_object(_n);
     }
     else {
-        throw bad_json("monostate");
+        throw bad_json(no_monostate_dump);
     }
 }
 
