@@ -30,6 +30,7 @@ struct exception;
 struct bad_content;
 struct bad_cast;
 struct bad_file;
+struct bad_json;
 // struct out_of_range;
 
 struct node {
@@ -117,6 +118,16 @@ public:
     bad_file& operator=(const bad_file&) noexcept = default;
     bad_file& operator=(bad_file&&) noexcept = default;
     virtual ~bad_file() noexcept = default;
+};
+struct bad_json : public exception {
+public:
+    explicit bad_json(const std::string&);
+    explicit bad_json(const char*);
+    bad_json(const bad_json&) noexcept = default;
+    bad_json(bad_json&&) noexcept = default;
+    bad_json& operator=(const bad_json&) noexcept = default;
+    bad_json& operator=(bad_json&&) noexcept = default;
+    virtual ~bad_json() noexcept = default;
 };
 
 // struct out_of_range : public exception {

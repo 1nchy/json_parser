@@ -229,6 +229,8 @@ bad_cast::bad_cast(const std::string& _msg) : exception(_msg) {}
 bad_cast::bad_cast(const char* _msg) : exception(_msg) {}
 bad_file::bad_file(const std::string& _msg) : exception(_msg) {}
 bad_file::bad_file(const char* _msg) : exception(_msg) {}
+bad_json::bad_json(const std::string& _msg) : exception(_msg) {}
+bad_json::bad_json(const char* _msg) : exception(_msg) {}
 // out_of_range::out_of_range(const std::string& _msg) : exception(_msg) {}
 // out_of_range::out_of_range(const char* _msg) : exception(_msg) {}
 

@@ -67,6 +67,9 @@ auto dumper::build_value(const node& _n) -> void {
     else if (std::holds_alternative<object>(_n.value())) {
         return build_object(_n);
     }
+    else {
+        throw bad_json("monostate");
+    }
 }
 
 auto dumper::operator()() -> std::string {
