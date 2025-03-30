@@ -75,21 +75,24 @@ auto loader::parse_array() -> tl::expected<json, bad_content> {
     if (after_nonsense(']')) {
         return _n;
     }
-    bool _first = true;
-    while (skip_nonsense() && (_first ^ after_nonsense(','))) {
+    while (skip_nonsense()) {
+        if (after_nonsense(']')) { // can't reach in first loop
+            return tl::unexpected(bad_content(exception::TRAILING_COMMA));
+        }
         auto _r = parse_value();
         if (!_r.has_value()) {
             return _r;
         }
         _n.push(_r.value());
-        _first = false;
+        if (after_nonsense(',')) {
+            continue;
+        }
+        if (after_nonsense(']')) {
+            return _n;
+        }
+        return tl::unexpected(bad_content(exception::RIGHT_SQUARE_EXPECTED));
     }
-    if (!after_nonsense(']')) {
-        return tl::unexpected(
-            bad_content(_first ? exception::RIGHT_SQUARE_EXPECTED : exception::TRAILING_COMMA)
-        );
-    }
-    return _n;
+    return tl::unexpected(bad_content(exception::RIGHT_SQUARE_EXPECTED));
 }
 /**
  * @brief parse an object (*_ptr == '{')
@@ -107,8 +110,10 @@ auto loader::parse_object() -> tl::expected<json, bad_content> {
     if (after_nonsense('}')) {
         return _n;
     }
-    bool _first = true;
-    while (skip_nonsense() && (_first ^ after_nonsense(','))) {
+    while (skip_nonsense()) {
+        if (after_nonsense('}')) { // can't reach in first loop
+            return tl::unexpected(bad_content(exception::TRAILING_COMMA));
+        }
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
             return tl::unexpected(bad_content(exception::STRING_KEY_EXPECTED));
@@ -122,14 +127,15 @@ auto loader::parse_object() -> tl::expected<json, bad_content> {
             return _r;
         }
         _n.insert(_k, _r.value());
-        _first = false;
+        if (after_nonsense(',')) {
+            continue;
+        }
+        if (after_nonsense('}')) {
+            return _n;
+        }
+        return tl::unexpected(bad_content(exception::RIGHT_CURLY_EXPECTED));
     }
-    if (!after_nonsense('}')) {
-        return tl::unexpected(
-            bad_content(_first ? exception::RIGHT_CURLY_EXPECTED : exception::TRAILING_COMMA)
-        );
-    }
-    return _n;
+    return tl::unexpected(bad_content(exception::RIGHT_CURLY_EXPECTED));
 }
 /**
  * @brief parse a value (boolean | integer | floating_point | string | array | object)
