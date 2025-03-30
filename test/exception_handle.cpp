@@ -4,58 +4,37 @@
 
 using namespace icy;
 
+using bad_content = json::bad_content;
+using exception = json::exception;
+
+auto about_bad_content(const std::string& _msg, const std::string& _json) noexcept -> bool {
+    try { [&_json](){ json::load(_json); }(); }
+    catch (const bad_content& _e) { return _e.what() == _msg; }
+    catch (...) { return false; }
+    return false;
+}
+
 int main(void) {
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::RIGHT_CURLY_EXPECTED,
-        [](){ json::load("{"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::RIGHT_SQUARE_EXPECTED,
-        [](){ json::load("["); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::COLON_EXPECTED,
-        [](){ json::load("{\"\"}"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::STRING_KEY_EXPECTED,
-        [](){ json::load("{one:1}"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::VALUE_EXPECTED,
-        [](){ json::load("[,]"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::VALUE_EXPECTED,
-        [](){ json::load(","); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::END_OF_FILE_EXPECTED,
-        [](){ json::load("1nchy"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::END_OF_STRING_EXPECTED,
-        [](){ json::load("\"1nchy"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::END_OF_STRING_EXPECTED,
-        [](){ json::load("\"1n\nchy\""); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::END_OF_NUMBER_EXPECTED,
-        [](){ json::load("1."); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::TRAILING_COMMA,
-        [](){ json::load("[1,2,]"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::TRAILING_COMMA,
-        [](){ json::load("{\"one\":1,}"); }
-    ));
-    icy_assert(expected_exception<json::bad_content>(
-        json::exception::END_OF_FILE_EXPECTED,
-        [](){ json::load("[1,2,3],"); }
-    ));
+    icy_assert(about_bad_content(exception::RIGHT_CURLY_EXPECTED, "{"));
+    icy_assert(about_bad_content(exception::RIGHT_CURLY_EXPECTED, "{\"first\":1st"));
+    icy_assert(about_bad_content(exception::RIGHT_SQUARE_EXPECTED, "["));
+    icy_assert(about_bad_content(exception::RIGHT_SQUARE_EXPECTED, "[1st"));
+    icy_assert(about_bad_content(exception::COLON_EXPECTED, "{\"\"}"));
+    icy_assert(about_bad_content(exception::STRING_KEY_EXPECTED, "{one:1}"));
+    icy_assert(about_bad_content(exception::STRING_KEY_EXPECTED, "{:1}"));
+    icy_assert(about_bad_content(exception::VALUE_EXPECTED, "[,]"));
+    icy_assert(about_bad_content(exception::VALUE_EXPECTED, "]"));
+    icy_assert(about_bad_content(exception::VALUE_EXPECTED, ","));
+    icy_assert(about_bad_content(exception::VALUE_EXPECTED, "truth"));
+    icy_assert(about_bad_content(exception::END_OF_STRING_EXPECTED, "\"1nchy"));
+    icy_assert(about_bad_content(exception::END_OF_STRING_EXPECTED, "\"1n\nchy\""));
+    icy_assert(about_bad_content(exception::END_OF_NUMBER_EXPECTED, "1."));
+    icy_assert(about_bad_content(exception::END_OF_NUMBER_EXPECTED, "-"));
+    icy_assert(about_bad_content(exception::TRAILING_COMMA, "[1,2,]"));
+    icy_assert(about_bad_content(exception::TRAILING_COMMA, "{\"one\":1,}"));
+    icy_assert(about_bad_content(exception::END_OF_FILE_EXPECTED, "1nchy"));
+    icy_assert(about_bad_content(exception::END_OF_FILE_EXPECTED, "truefalse"));
+    icy_assert(about_bad_content(exception::END_OF_FILE_EXPECTED, "[1,2,3],"));
+    icy_assert(about_bad_content(exception::END_OF_FILE_EXPECTED, "[1,2,3][]"));
     return 0;
 }
