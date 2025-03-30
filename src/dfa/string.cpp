@@ -3,8 +3,6 @@
 
 namespace icy {
 
-namespace json {
-
 auto string_state::handle(const fsm::event&) -> label_type {
     _eof = true;
     return {};
@@ -63,8 +61,6 @@ auto string_state::BDE::handle(const fsm::character::backslash& _e) -> label_typ
 auto string_state::BDE::handle(const fsm::character::double_quote& _e) -> label_type {
     ++_length;
     return F::label();
-}
-
 }
 
 }

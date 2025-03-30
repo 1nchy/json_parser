@@ -6,11 +6,9 @@
 
 namespace icy {
 
-namespace json {
-
 struct integer_state : public fsm::state {
     using state = fsm::state;
-    using type = integer;
+    using type = json::integer;
     integer_state() = default;
     integer_state& operator=(const integer_state&) = default;
     virtual label_type handle(const fsm::event&) override;
@@ -45,8 +43,6 @@ struct integer_state::CD : public integer_state {
     FSM_STATE_LABEL
     label_type handle(const fsm::character::digit& _e) override;
 };
-
-}
 
 }
 

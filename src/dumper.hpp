@@ -7,33 +7,31 @@
 
 namespace icy {
 
-namespace json {
-
 struct dumper;
 
 struct dumper {
+    using bad_json = json::bad_json;
+    using exception = json::exception;
 public:
-    dumper(const node&);
+    dumper(const json&);
     dumper(const dumper&) = delete;
     dumper& operator=(const dumper&) = delete;
     ~dumper() = default;
 public:
-    void build_boolean(const node&);
-    void build_integer(const node&);
-    void build_floating_point(const node&);
-    void build_string(const node&);
-    void build_array(const node&);
-    void build_object(const node&);
-    void build_value(const node&);
+    void build_boolean(const json&);
+    void build_integer(const json&);
+    void build_floating_point(const json&);
+    void build_string(const json&);
+    void build_array(const json&);
+    void build_object(const json&);
+    void build_value(const json&);
     auto operator()() -> std::string;
 private:
-    void _M_build_string(const string&);
+    void _M_build_string(const json::string&);
 private:
-    const node& _json;
+    const json& _json;
     std::stringstream _ss;
 };
-
-}
 
 }
 

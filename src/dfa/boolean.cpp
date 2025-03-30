@@ -2,8 +2,6 @@
 
 namespace icy {
 
-namespace json {
-
 auto boolean_state::handle(const fsm::event&) -> label_type {
     _eof = true;
     return {};
@@ -95,8 +93,6 @@ auto boolean_state::U::handle(const fsm::character::lower_case& _e) -> label_typ
     }
     _eof = true;
     return state::label();
-}
-
 }
 
 }

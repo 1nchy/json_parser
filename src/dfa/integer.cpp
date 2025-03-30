@@ -3,8 +3,6 @@
 
 namespace icy {
 
-namespace json {
-
 auto integer_state::handle(const fsm::event&) -> label_type {
     _eof = true;
     return {};
@@ -52,8 +50,6 @@ auto integer_state::B::handle(const fsm::character::digit& _e) -> label_type {
 auto integer_state::CD::handle(const fsm::character::digit& _e) -> label_type {
     _str.push_back(_e.value());
     return {};
-}
-
 }
 
 }

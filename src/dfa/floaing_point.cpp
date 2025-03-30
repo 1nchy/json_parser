@@ -3,8 +3,6 @@
 
 namespace icy {
 
-namespace json {
-
 auto floating_point_state::handle(const fsm::event&) -> label_type {
     _eof = true;
     return {};
@@ -67,8 +65,6 @@ auto floating_point_state::D::handle(const fsm::character::digit& _e) -> label_t
 auto floating_point_state::E::handle(const fsm::character::digit& _e) -> label_type {
     _str.push_back(_e.value());
     return E::label();
-}
-
 }
 
 }

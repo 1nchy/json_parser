@@ -6,11 +6,9 @@
 
 namespace icy {
 
-namespace json {
-
 struct string_state : public fsm::state {
     using state = fsm::state;
-    using type = string;
+    using type = json::string;
     string_state() = default;
     string_state& operator=(const string_state&) = default;
     virtual label_type handle(const fsm::event&) override;
@@ -57,8 +55,6 @@ struct string_state::BDE : public string_state {
 struct string_state::F : public string_state {
     FSM_STATE_LABEL
 };
-
-}
 
 }
 

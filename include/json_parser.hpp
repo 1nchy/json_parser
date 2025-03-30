@@ -13,51 +13,51 @@
 
 namespace icy {
 
-namespace json {
+struct json;
 
-struct node;
-using monostate = std::monostate;
-using boolean = bool;
-using integer = long;
-using floating_point = double;
-using string = std::string;
-using array = std::vector<node>;
-// using object = std::unordered_map<string, node>;
-using object = std::map<string, node>;
-using value_type = std::variant<monostate, boolean, integer, floating_point, string, array, object>;
-
-struct exception;
-struct bad_content;
-struct bad_cast;
-struct bad_json;
-
-struct node {
+struct json {
 public:
-    node();
-    node(const node&) = default;
-    node(node&&) = default;
-    node(const value_type& _value);
-    node(value_type&& _value);
-    ~node() = default;
-    auto operator=(const node&) -> node&;
-    auto operator=(node&&) -> node&;
-    auto operator=(const value_type&) -> node&;
-    auto operator=(value_type&&) -> node&;
-    auto operator==(const node&) const -> bool;
+    using monostate = std::monostate;
+    using boolean = bool;
+    using integer = long;
+    using floating_point = double;
+    using string = std::string;
+    using array = std::vector<json>;
+    // using object = std::unordered_map<string, json>;
+    using object = std::map<string, json>;
+    using value_type = std::variant<monostate, boolean, integer, floating_point, string, array, object>;
+    struct exception;
+    struct bad_content;
+    struct bad_cast;
+    struct bad_json;
+public:
+    json();
+    json(const json&) = default;
+    json(json&&) = default;
+    json(const value_type& _value);
+    json(value_type&& _value);
+    ~json() = default;
+public:
+    auto operator=(const json&) -> json&;
+    auto operator=(json&&) -> json&;
+    auto operator=(const value_type&) -> json&;
+    auto operator=(value_type&&) -> json&;
+    auto operator==(const json&) const -> bool;
     auto operator==(const value_type&) const -> bool;
-    auto operator!=(const node&) const -> bool;
+    auto operator!=(const json&) const -> bool;
     auto operator!=(const value_type&) const -> bool;
-    auto operator[](const string&) -> node&;
-    auto operator[](const string&) const -> const node&;
-    auto operator[](size_t) -> node&;
-    auto operator[](size_t) const -> const node&;
-    void push(const node&);
-    void push(node&&);
+    auto operator[](const string&) -> json&;
+    auto operator[](const string&) const -> const json&;
+    auto operator[](size_t) -> json&;
+    auto operator[](size_t) const -> const json&;
+public:
+    void push(const json&);
+    void push(json&&);
     void push(const value_type&);
     void push(value_type&&);
     void pop();
-    void insert(const string&, const node&);
-    void insert(const string&, node&&);
+    void insert(const string&, const json&);
+    void insert(const string&, json&&);
     void insert(const string&, const value_type&);
     void insert(const string&, value_type&&);
     void erase(const string&);
@@ -67,12 +67,53 @@ public:
     auto value() const -> const value_type&;
     template<typename _Tp> auto value() -> _Tp&;
     template<typename _Tp> auto value() const -> const _Tp&;
+public:
+    /**
+     * @brief load string to json
+     * @param _s ascii string
+     * @return json
+     * @throw bad_content
+     */
+    static auto load(const std::string&) -> json;
+    /**
+     * @brief load file stream to json
+     * @param _ifs json file input stream
+     * @return json
+     * @throw bad_content
+     */
+    static auto load(std::ifstream&) -> json;
+    /**
+     * @brief dump json to string
+     * @param _n json
+     * @return ascii string
+     * @throw bad_json
+     */
+    static auto dump(const json&) -> std::string;
+    /**
+     * @brief dump json to file stream
+     * @param _n json
+     * @param _ofs json file output stream
+     * @throw bad_json
+     */
+    static auto dump(const json&, std::ofstream&) -> void;
+    /**
+     * @brief dump json to string
+     * @return ascii string
+     * @throw bad_json
+     */
+    auto dump() const -> std::string;
+    /**
+     * @brief dump json to file stream
+     * @param _ofs json file output stream
+     * @throw bad_json
+     */
+    auto dump(std::ofstream&) const -> void;
 private:
     value_type _value;
 };
 
 
-struct exception : public std::exception {
+struct json::exception : public std::exception {
 public:
     explicit exception(const std::string&);
     explicit exception(const char*);
@@ -82,6 +123,20 @@ public:
     exception& operator=(exception&&) noexcept = default;
     virtual ~exception() noexcept = default;
     virtual const char* what() const noexcept;
+public:
+    static constexpr inline const char* RIGHT_CURLY_EXPECTED = "right curly expected";
+    static constexpr inline const char* RIGHT_SQUARE_EXPECTED = "right square expected";
+    static constexpr inline const char* TRAILING_COMMA = "trailing comma";
+    static constexpr inline const char* COLON_EXPECTED = "colon expected";
+    static constexpr inline const char* VALUE_EXPECTED = "value expected";
+    static constexpr inline const char* STRING_KEY_EXPECTED = "string key expected";
+    static constexpr inline const char* END_OF_FILE_EXPECTED = "end of file expected";
+    static constexpr inline const char* NOT_THE_TYPE = "not the type";
+    static constexpr inline const char* NOT_AN_OBJECT = "not an object";
+    static constexpr inline const char* NOT_AN_ARRAY = "not an array";
+    static constexpr inline const char* NOT_AN_ARRAY_OR_OBJECT = "not an array or object";
+    static constexpr inline const char* NO_MONOSTATE_ASSIGNMENT = "no monostate assignment";
+    static constexpr inline const char* NO_MONOSTATE_DUMP = "no monostate dump";
 private:
     std::string _msg;
 };
@@ -89,7 +144,7 @@ private:
 /**
  * @brief exception in loading json string
  */
-struct bad_content : public exception {
+struct json::bad_content : public json::exception {
 public:
     explicit bad_content(const std::string&);
     explicit bad_content(const char*);
@@ -102,7 +157,7 @@ public:
 /**
  * @brief exception in type casting
  */
-struct bad_cast : public exception {
+struct json::bad_cast : public json::exception {
 public:
     explicit bad_cast(const std::string&);
     explicit bad_cast(const char*);
@@ -113,9 +168,9 @@ public:
     virtual ~bad_cast() noexcept = default;
 };
 /**
- * @brief exception in dumping json node
+ * @brief exception in dumping json
  */
-struct bad_json : public exception {
+struct json::bad_json : public json::exception {
 public:
     explicit bad_json(const std::string&);
     explicit bad_json(const char*);
@@ -127,70 +182,18 @@ public:
 };
 
 
-/**
- * @brief load string to json
- * @param _s ascii string
- * @return json node
- * @throw bad_content
- */
-auto load(const std::string& _s) -> node;
-/**
- * @brief load file stream to json
- * @param _ifs json file input stream
- * @return json node
- * @throw bad_content
- */
-auto load(std::ifstream& _ifs) -> node;
-/**
- * @brief dump json to string
- * @param _n json node
- * @return ascii string
- * @throw bad_json
- */
-auto dump(const node& _n) -> std::string;
-/**
- * @brief dump json to file stream
- * @param _ofs json file output stream
- * @return ascii string
- * @throw bad_json
- */
-auto dump(const node& _n, std::ofstream& _ofs) -> void;
 
-
-namespace literal {
-
-constexpr const char* right_curly_expected = "right curly expected";
-constexpr const char* right_square_expected = "right square expected";
-constexpr const char* trailing_comma = "trailing comma";
-constexpr const char* colon_expected = "colon expected";
-constexpr const char* value_expected = "value expected";
-constexpr const char* string_key_expected = "string key expected";
-constexpr const char* end_of_file_expected = "end of file expected";
-
-constexpr const char* not_the_type = "not the type";
-constexpr const char* not_an_object = "not an object";
-constexpr const char* not_an_array = "not an array";
-constexpr const char* not_an_array_or_object = "not an array or object";
-constexpr const char* no_monostate_assignment = "no monostate assignment";
-
-constexpr const char* no_monostate_dump = "no monostate dump";
-
-}
-
-
-template <typename _Tp> auto node::value() -> _Tp& {
+template <typename _Tp> auto json::value() -> _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);
     }
-    throw bad_cast(literal::not_the_type);
+    throw bad_cast(exception::NOT_THE_TYPE);
 }
-template <typename _Tp> auto node::value() const -> const _Tp& {
+template <typename _Tp> auto json::value() const -> const _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);
     }
-    throw bad_cast(literal::not_the_type);
-}
-
+    throw bad_cast(exception::NOT_THE_TYPE);
 }
 
 }

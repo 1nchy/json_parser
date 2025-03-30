@@ -4,27 +4,23 @@
 
 namespace icy {
 
-namespace json {
+dumper::dumper(const json& _json) : _json(_json) {}
 
-using namespace literal;
-
-dumper::dumper(const node& _json) : _json(_json) {}
-
-auto dumper::build_boolean(const node& _n) -> void {
-    _ss << (_n.value<boolean>() ? "true" : "false");
+auto dumper::build_boolean(const json& _n) -> void {
+    _ss << (_n.value<json::boolean>() ? "true" : "false");
 }
-auto dumper::build_integer(const node& _n) -> void {
-    _ss << _n.value<integer>();
+auto dumper::build_integer(const json& _n) -> void {
+    _ss << _n.value<json::integer>();
 }
-auto dumper::build_floating_point(const node& _n) -> void {
-    _ss << _n.value<floating_point>();
+auto dumper::build_floating_point(const json& _n) -> void {
+    _ss << _n.value<json::floating_point>();
 }
-auto dumper::build_string(const node& _n) -> void {
-    _M_build_string(_n.value<string>());
+auto dumper::build_string(const json& _n) -> void {
+    _M_build_string(_n.value<json::string>());
 }
-auto dumper::build_array(const node& _n) -> void {
+auto dumper::build_array(const json& _n) -> void {
     _ss << '[';
-    const auto& _array = _n.value<array>();
+    const auto& _array = _n.value<json::array>();
     bool _first = true;
     for (const auto& _v : _array) {
         if (!_first) {
@@ -35,9 +31,9 @@ auto dumper::build_array(const node& _n) -> void {
     }
     _ss << ']';
 }
-auto dumper::build_object(const node& _n) -> void {
+auto dumper::build_object(const json& _n) -> void {
     _ss << '{';
-    const auto& _object = _n.value<object>();
+    const auto& _object = _n.value<json::object>();
     bool _first = true;
     for (const auto& [_k, _v] : _object) {
         if (!_first) {
@@ -50,40 +46,40 @@ auto dumper::build_object(const node& _n) -> void {
     }
     _ss << '}';
 }
-auto dumper::build_value(const node& _n) -> void {
-    if (std::holds_alternative<boolean>(_n.value())) {
+auto dumper::build_value(const json& _n) -> void {
+    if (std::holds_alternative<json::boolean>(_n.value())) {
         return build_boolean(_n);
     }
-    else if (std::holds_alternative<integer>(_n.value())) {
+    else if (std::holds_alternative<json::integer>(_n.value())) {
         return build_integer(_n);
     }
-    else if (std::holds_alternative<floating_point>(_n.value())) {
+    else if (std::holds_alternative<json::floating_point>(_n.value())) {
         return build_floating_point(_n);
     }
-    else if (std::holds_alternative<string>(_n.value())) {
+    else if (std::holds_alternative<json::string>(_n.value())) {
         return build_string(_n);
     }
-    else if (std::holds_alternative<array>(_n.value())) {
+    else if (std::holds_alternative<json::array>(_n.value())) {
         return build_array(_n);
     }
-    else if (std::holds_alternative<object>(_n.value())) {
+    else if (std::holds_alternative<json::object>(_n.value())) {
         return build_object(_n);
     }
     else {
-        throw bad_json(no_monostate_dump);
+        throw bad_json(exception::NO_MONOSTATE_DUMP);
     }
 }
 
 auto dumper::operator()() -> std::string {
     _ss.clear();
-    if (std::holds_alternative<monostate>(_json.value())) {
+    if (std::holds_alternative<json::monostate>(_json.value())) {
         return "";
     }
     build_value(_json);
     return _ss.str();
 }
 
-auto dumper::_M_build_string(const string& _s) -> void {
+auto dumper::_M_build_string(const json::string& _s) -> void {
     _ss << '\"';
     for (const char _c : _s) {
         if (auto _x = char_2_esc(_c)) {
@@ -94,8 +90,6 @@ auto dumper::_M_build_string(const string& _s) -> void {
         }
     }
     _ss << '\"';
-}
-
 }
 
 }

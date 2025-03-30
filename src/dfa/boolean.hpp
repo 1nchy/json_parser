@@ -6,11 +6,9 @@
 
 namespace icy {
 
-namespace json {
-
 struct boolean_state : public fsm::state {
     using state = fsm::state;
-    using type = boolean;
+    using type = json::boolean;
     boolean_state() = default;
     boolean_state& operator=(const boolean_state&) = default;
     virtual label_type handle(const fsm::event&) override;
@@ -70,8 +68,6 @@ struct boolean_state::U : public boolean_state {
 struct boolean_state::E : public boolean_state {
     FSM_STATE_LABEL
 };
-
-}
 
 }
 

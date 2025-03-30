@@ -10,11 +10,11 @@
 
 namespace icy {
 
-namespace json {
-
 struct loader;
 
 struct loader {
+    using bad_content = json::bad_content;
+    using exception = json::exception;
 public:
     loader(const std::string&);
     loader(const loader&) = delete;
@@ -25,11 +25,11 @@ public:
     /**
      * @brief parse boolean | integer | floating_point | string
      */
-    template <typename _St> auto parse_normal_value(fsm::context<_St>&) -> tl::expected<node, bad_content>;
-    auto parse_array() -> tl::expected<node, bad_content>;
-    auto parse_object() -> tl::expected<node, bad_content>;
-    auto parse_value() -> tl::expected<node, bad_content>;
-    auto operator()() -> node;
+    template <typename _St> auto parse_normal_value(fsm::context<_St>&) -> tl::expected<json, json::bad_content>;
+    auto parse_array() -> tl::expected<json, json::bad_content>;
+    auto parse_object() -> tl::expected<json, json::bad_content>;
+    auto parse_value() -> tl::expected<json, json::bad_content>;
+    auto operator()() -> json;
 private:
     /**
      * @brief skip blank and control character in json
@@ -58,25 +58,23 @@ private:
 };
 
 template <typename _St> auto
-loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<node, bad_content> {
+loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<json, json::bad_content> {
     if (!skip_nonsense()) {
-        return tl::unexpected(bad_content(literal::value_expected));
+        return tl::unexpected(json::bad_content(json::exception::VALUE_EXPECTED));
     }
     _fsm.restart();
     for (auto _i = _ptr; ; ++_i) {
         if (_i == _json.cend() || !fsm::character::handle(_fsm, *_i)) {
             if (_fsm.acceptable()) {
                 _ptr = _i;
-                return node(_fsm.state()->value());
+                return json(_fsm.state()->value());
             }
             else {
-                return tl::unexpected(bad_content(literal::value_expected));
+                return tl::unexpected(json::bad_content(exception::VALUE_EXPECTED));
             }
         }
     }
-    return tl::unexpected(bad_content(literal::value_expected));
-}
-
+    return tl::unexpected(json::bad_content(exception::VALUE_EXPECTED));
 }
 
 }

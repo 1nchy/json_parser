@@ -4,10 +4,6 @@
 
 namespace icy {
 
-namespace json {
-
-using namespace literal;
-
 loader::loader(const std::string& _json) : _json(_json) {
     _boolean_fsm.enroll<
         boolean_state::X,
@@ -73,9 +69,9 @@ loader::loader(const std::string& _json) : _json(_json) {
  *   elif { parse_object
  *   else try each fsm
  */
-auto loader::parse_array() -> tl::expected<node, bad_content> {
+auto loader::parse_array() -> tl::expected<json, bad_content> {
     // last character is '['
-    node _n(array{});
+    json _n(json::array{});
     if (after_nonsense(']')) {
         return _n;
     }
@@ -90,7 +86,7 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
     }
     if (!after_nonsense(']')) {
         return tl::unexpected(
-            bad_content(_first ? right_square_expected : trailing_comma)
+            bad_content(_first ? exception::RIGHT_SQUARE_EXPECTED : exception::TRAILING_COMMA)
         );
     }
     return _n;
@@ -105,9 +101,9 @@ auto loader::parse_array() -> tl::expected<node, bad_content> {
  *   elif { parse_object
  *   else try each fsm
  */
-auto loader::parse_object() -> tl::expected<node, bad_content> {
+auto loader::parse_object() -> tl::expected<json, bad_content> {
     // last character is '{'
-    node _n(object{});
+    json _n(json::object{});
     if (after_nonsense('}')) {
         return _n;
     }
@@ -115,11 +111,11 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
     while (skip_nonsense() && (_first ^ after_nonsense(','))) {
         auto _kr = parse_normal_value(_string_fsm);
         if (!_kr.has_value()) {
-            return tl::unexpected(bad_content(string_key_expected));
+            return tl::unexpected(bad_content(exception::STRING_KEY_EXPECTED));
         }
-        const auto _k = std::get<string>(_kr.value().value());
+        const auto _k = std::get<json::string>(_kr.value().value());
         if (!after_nonsense(':')) {
-            return tl::unexpected(bad_content(colon_expected));
+            return tl::unexpected(bad_content(exception::COLON_EXPECTED));
         }
         auto _r = parse_value();
         if (!_r.has_value()) {
@@ -130,7 +126,7 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
     }
     if (!after_nonsense('}')) {
         return tl::unexpected(
-            bad_content(_first ? right_curly_expected : trailing_comma)
+            bad_content(_first ? exception::RIGHT_CURLY_EXPECTED : exception::TRAILING_COMMA)
         );
     }
     return _n;
@@ -139,9 +135,9 @@ auto loader::parse_object() -> tl::expected<node, bad_content> {
  * @brief parse a value (boolean | integer | floating_point | string | array | object)
  * @details skip blank first
  */
-auto loader::parse_value() -> tl::expected<node, bad_content> {
+auto loader::parse_value() -> tl::expected<json, bad_content> {
     if (!skip_nonsense()) {
-        return tl::unexpected(bad_content(value_expected));
+        return tl::unexpected(bad_content(exception::VALUE_EXPECTED));
     }
     if (after_nonsense('[')) {
         return parse_array();
@@ -150,7 +146,7 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
         return parse_object();
     }
     else {
-        node _n;
+        json _n;
         if (auto _r = parse_normal_value(_boolean_fsm)) {
             _n = _r.value();
         }
@@ -164,20 +160,20 @@ auto loader::parse_value() -> tl::expected<node, bad_content> {
             _n = _r.value();
         }
         else {
-            return tl::unexpected(bad_content(value_expected));
+            return tl::unexpected(bad_content(exception::VALUE_EXPECTED));
         }
         return _n;
     }
 }
-auto loader::operator()() -> node {
+auto loader::operator()() -> json {
     _ptr = _json.cbegin();
     if (!skip_nonsense()) { // empty content
-        return node(monostate{});
+        return json(json::monostate{});
     }
     auto _r = parse_value();
     if (_r.has_value()) {
         if (skip_nonsense()) {
-            throw bad_content(end_of_file_expected);
+            throw bad_content(exception::END_OF_FILE_EXPECTED);
         }
         return _r.value();
     }
@@ -202,8 +198,6 @@ auto loader::after_nonsense(char _c) noexcept -> bool {
     }
     ++_ptr;
     return true;
-}
-
 }
 
 }

@@ -6,15 +6,13 @@
 
 namespace icy {
 
-namespace json {
-
 /**
  * @details
  * [+-]?[0-9]+\.[0-9]+
  */
 struct floating_point_state : public fsm::state {
     using state = fsm::state;
-    using type = floating_point;
+    using type = json::floating_point;
     floating_point_state() = default;
     floating_point_state& operator=(const floating_point_state&) = default;
     virtual label_type handle(const fsm::event&) override;
@@ -61,8 +59,6 @@ struct floating_point_state::E : public floating_point_state {
     FSM_STATE_LABEL
     label_type handle(const fsm::character::digit& _e) override;
 };
-
-}
 
 }
 
