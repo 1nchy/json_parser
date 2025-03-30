@@ -114,7 +114,7 @@ auto loader::parse_object() -> tl::expected<json, bad_content> {
         if (after_nonsense('}')) { // can't reach in first loop
             return tl::unexpected(bad_content(exception::TRAILING_COMMA));
         }
-        auto _kr = parse_normal_value(_string_fsm);
+        auto _kr = parse_string();
         if (!_kr.has_value()) {
             return tl::unexpected(bad_content(exception::STRING_KEY_EXPECTED));
         }
@@ -138,6 +138,30 @@ auto loader::parse_object() -> tl::expected<json, bad_content> {
     return tl::unexpected(bad_content(exception::RIGHT_CURLY_EXPECTED));
 }
 /**
+ * @brief parse a literal (boolean | integer | floating_point | string)
+ * @implements
+ */
+auto loader::parse_literal() -> tl::expected<json, bad_content> {
+    const std::vector<std::pair<size_t, tl::expected<json, bad_content>>> _results {
+        _M_parse_literal(_boolean_fsm), _M_parse_literal(_integer_fsm),
+        _M_parse_literal(_floating_point_fsm), _M_parse_literal(_string_fsm)
+    };
+    auto _result = std::max_element(_results.cbegin(), _results.cend(), [](const auto& _x, const auto& _y) {
+        return _x.first < _y.first;
+    });
+    _ptr += _result->first;
+    return _result->second;
+}
+/**
+ * @brief parse a string
+ * @implements
+ */
+auto loader::parse_string() -> tl::expected<json, bad_content> {
+    const auto _result = _M_parse_literal(_string_fsm);
+    _ptr += _result.first;
+    return _result.second;
+}
+/**
  * @brief parse a value (boolean | integer | floating_point | string | array | object)
  * @details skip blank first
  */
@@ -152,23 +176,7 @@ auto loader::parse_value() -> tl::expected<json, bad_content> {
         return parse_object();
     }
     else {
-        json _n;
-        if (auto _r = parse_normal_value(_boolean_fsm)) {
-            _n = _r.value();
-        }
-        else if (auto _r = parse_normal_value(_floating_point_fsm)) {
-            _n = _r.value();
-        }
-        else if (auto _r = parse_normal_value(_integer_fsm)) {
-            _n = _r.value();
-        }
-        else if (auto _r = parse_normal_value(_string_fsm)) {
-            _n = _r.value();
-        }
-        else {
-            return tl::unexpected(bad_content(exception::VALUE_EXPECTED));
-        }
-        return _n;
+        return parse_literal();
     }
 }
 auto loader::operator()() -> json {

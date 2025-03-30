@@ -22,20 +22,16 @@ public:
     ~loader() = default;
     using pointer = std::string::const_iterator;
 public:
+    auto parse_value() -> tl::expected<json, bad_content>;
+    auto operator()() -> json;
+private:
+    auto parse_array() -> tl::expected<json, bad_content>;
+    auto parse_object() -> tl::expected<json, bad_content>;
     /**
      * @brief parse boolean | integer | floating_point | string
      */
-    template <typename _St> auto parse_normal_value(fsm::context<_St>&) -> tl::expected<json, json::bad_content>;
-    auto parse_array() -> tl::expected<json, json::bad_content>;
-    auto parse_object() -> tl::expected<json, json::bad_content>;
-    auto parse_value() -> tl::expected<json, json::bad_content>;
-    auto operator()() -> json;
-private:
-    /**
-     * @brief skip blank and control character in json
-     * @return pointer to the character after nonsense
-     */
-    auto _M_skip_nonsense() const noexcept -> pointer;
+    auto parse_literal() -> tl::expected<json, bad_content>;
+    auto parse_string() -> tl::expected<json, bad_content>;
     /**
      * @brief skip blank and control character in json
      * @retval true content left
@@ -49,6 +45,13 @@ private:
      */
     auto after_nonsense(char) noexcept -> bool;
 private:
+    /**
+     * @brief skip blank and control character in json
+     * @return pointer to the character after nonsense
+     */
+    auto _M_skip_nonsense() const noexcept -> pointer;
+    template <typename _St> auto _M_parse_literal(fsm::context<_St>&) -> std::pair<size_t, tl::expected<json, bad_content>>;
+private:
     fsm::context<boolean_state> _boolean_fsm;
     fsm::context<floating_point_state> _floating_point_fsm;
     fsm::context<integer_state> _integer_fsm;
@@ -57,24 +60,29 @@ private:
     pointer _ptr;
 };
 
-template <typename _St> auto
-loader::parse_normal_value(fsm::context<_St>& _fsm) -> tl::expected<json, json::bad_content> {
+template <typename _St> auto 
+loader::_M_parse_literal(fsm::context<_St>& _fsm) -> std::pair<size_t, tl::expected<json, bad_content>> {
     if (!skip_nonsense()) {
-        return tl::unexpected(json::bad_content(json::exception::VALUE_EXPECTED));
+        return std::make_pair(0, tl::unexpected(bad_content(exception::VALUE_EXPECTED)));
     }
     _fsm.restart();
     for (auto _i = _ptr; ; ++_i) {
         if (_i == _json.cend() || !fsm::character::handle(_fsm, *_i)) {
             if (_fsm.acceptable()) {
-                _ptr = _i;
-                return json(_fsm.state()->value());
+                return std::make_pair(
+                    _fsm.state()->length(),
+                    json(_fsm.state()->value())
+                );
             }
             else {
-                return tl::unexpected(json::bad_content(exception::VALUE_EXPECTED));
+                return std::make_pair(
+                    _fsm.state()->length(),
+                    tl::unexpected(bad_content(exception::VALUE_EXPECTED))
+                );
             }
         }
     }
-    return tl::unexpected(json::bad_content(exception::VALUE_EXPECTED));
+    return std::make_pair(0, tl::unexpected(bad_content(exception::VALUE_EXPECTED)));
 }
 
 }
