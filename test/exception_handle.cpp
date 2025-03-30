@@ -30,6 +30,22 @@ int main(void) {
         [](){ json::load(","); }
     ));
     icy_assert(expected_exception<json::bad_content>(
+        json::exception::END_OF_FILE_EXPECTED,
+        [](){ json::load("1nchy"); }
+    ));
+    icy_assert(expected_exception<json::bad_content>(
+        json::exception::END_OF_STRING_EXPECTED,
+        [](){ json::load("\"1nchy"); }
+    ));
+    icy_assert(expected_exception<json::bad_content>(
+        json::exception::END_OF_STRING_EXPECTED,
+        [](){ json::load("\"1n\nchy\""); }
+    ));
+    icy_assert(expected_exception<json::bad_content>(
+        json::exception::END_OF_NUMBER_EXPECTED,
+        [](){ json::load("1."); }
+    ));
+    icy_assert(expected_exception<json::bad_content>(
         json::exception::TRAILING_COMMA,
         [](){ json::load("[1,2,]"); }
     ));

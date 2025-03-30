@@ -62,6 +62,40 @@ loader::loader(const std::string& _json) : _json(_json) {
 }
 
 /**
+ * @brief parse a value (boolean | integer | floating_point | string | array | object)
+ * @details skip blank first
+ */
+auto loader::parse_value() -> tl::expected<json, bad_content> {
+    if (!skip_nonsense()) {
+        return tl::unexpected(bad_content(exception::VALUE_EXPECTED));
+    }
+    if (after_nonsense('[')) {
+        return parse_array();
+    }
+    else if (after_nonsense('{')) {
+        return parse_object();
+    }
+    else {
+        return parse_literal();
+    }
+}
+auto loader::operator()() -> json {
+    _ptr = _json.cbegin();
+    if (!skip_nonsense()) { // empty content
+        return json(json::monostate{});
+    }
+    auto _r = parse_value();
+    if (_r.has_value()) {
+        if (skip_nonsense()) {
+            throw bad_content(exception::END_OF_FILE_EXPECTED);
+        }
+        return _r.value();
+    }
+    throw _r.error();
+}
+
+
+/**
  * @brief parse an array (*_ptr == '[')
  * @implements
  * while ,
@@ -143,8 +177,10 @@ auto loader::parse_object() -> tl::expected<json, bad_content> {
  */
 auto loader::parse_literal() -> tl::expected<json, bad_content> {
     const std::vector<std::pair<size_t, tl::expected<json, bad_content>>> _results {
-        _M_parse_literal(_boolean_fsm), _M_parse_literal(_integer_fsm),
-        _M_parse_literal(_floating_point_fsm), _M_parse_literal(_string_fsm)
+        _M_parse_literal(_boolean_fsm),
+        _M_parse_literal(_integer_fsm, exception::END_OF_NUMBER_EXPECTED),
+        _M_parse_literal(_floating_point_fsm, exception::END_OF_NUMBER_EXPECTED),
+        _M_parse_literal(_string_fsm, exception::END_OF_STRING_EXPECTED)
     };
     auto _result = std::max_element(_results.cbegin(), _results.cend(), [](const auto& _x, const auto& _y) {
         return _x.first < _y.first;
@@ -161,47 +197,6 @@ auto loader::parse_string() -> tl::expected<json, bad_content> {
     _ptr += _result.first;
     return _result.second;
 }
-/**
- * @brief parse a value (boolean | integer | floating_point | string | array | object)
- * @details skip blank first
- */
-auto loader::parse_value() -> tl::expected<json, bad_content> {
-    if (!skip_nonsense()) {
-        return tl::unexpected(bad_content(exception::VALUE_EXPECTED));
-    }
-    if (after_nonsense('[')) {
-        return parse_array();
-    }
-    else if (after_nonsense('{')) {
-        return parse_object();
-    }
-    else {
-        return parse_literal();
-    }
-}
-auto loader::operator()() -> json {
-    _ptr = _json.cbegin();
-    if (!skip_nonsense()) { // empty content
-        return json(json::monostate{});
-    }
-    auto _r = parse_value();
-    if (_r.has_value()) {
-        if (skip_nonsense()) {
-            throw bad_content(exception::END_OF_FILE_EXPECTED);
-        }
-        return _r.value();
-    }
-    throw _r.error();
-}
-
-
-auto loader::_M_skip_nonsense() const noexcept -> pointer {
-    pointer _p = _ptr;
-    while (_p != _json.cend() && (isblank(*_p) || !isprint(*_p))) {
-        ++_p;
-    }
-    return _p;
-}
 auto loader::skip_nonsense() noexcept -> bool {
     _ptr = _M_skip_nonsense();
     return _ptr != _json.cend();
@@ -212,6 +207,15 @@ auto loader::after_nonsense(char _c) noexcept -> bool {
     }
     ++_ptr;
     return true;
+}
+
+
+auto loader::_M_skip_nonsense() const noexcept -> pointer {
+    pointer _p = _ptr;
+    while (_p != _json.cend() && (isblank(*_p) || !isprint(*_p))) {
+        ++_p;
+    }
+    return _p;
 }
 
 }

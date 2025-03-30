@@ -130,6 +130,8 @@ public:
     static constexpr inline const char* COLON_EXPECTED = "colon expected";
     static constexpr inline const char* VALUE_EXPECTED = "value expected";
     static constexpr inline const char* STRING_KEY_EXPECTED = "string key expected";
+    static constexpr inline const char* END_OF_NUMBER_EXPECTED = "end of number expected";
+    static constexpr inline const char* END_OF_STRING_EXPECTED = "end of string expected";
     static constexpr inline const char* END_OF_FILE_EXPECTED = "end of file expected";
     static constexpr inline const char* NOT_THE_TYPE = "not the type";
     static constexpr inline const char* NOT_AN_OBJECT = "not an object";

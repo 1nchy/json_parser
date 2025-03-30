@@ -50,7 +50,7 @@ private:
      * @return pointer to the character after nonsense
      */
     auto _M_skip_nonsense() const noexcept -> pointer;
-    template <typename _St> auto _M_parse_literal(fsm::context<_St>&) -> std::pair<size_t, tl::expected<json, bad_content>>;
+    template <typename _St> auto _M_parse_literal(fsm::context<_St>&, const char* _msg = exception::VALUE_EXPECTED) -> std::pair<size_t, tl::expected<json, bad_content>>;
 private:
     fsm::context<boolean_state> _boolean_fsm;
     fsm::context<floating_point_state> _floating_point_fsm;
@@ -61,7 +61,7 @@ private:
 };
 
 template <typename _St> auto 
-loader::_M_parse_literal(fsm::context<_St>& _fsm) -> std::pair<size_t, tl::expected<json, bad_content>> {
+loader::_M_parse_literal(fsm::context<_St>& _fsm, const char* _msg) -> std::pair<size_t, tl::expected<json, bad_content>> {
     if (!skip_nonsense()) {
         return std::make_pair(0, tl::unexpected(bad_content(exception::VALUE_EXPECTED)));
     }
@@ -77,7 +77,7 @@ loader::_M_parse_literal(fsm::context<_St>& _fsm) -> std::pair<size_t, tl::expec
             else {
                 return std::make_pair(
                     _fsm.state()->length(),
-                    tl::unexpected(bad_content(exception::VALUE_EXPECTED))
+                    tl::unexpected(bad_content(_msg))
                 );
             }
         }
