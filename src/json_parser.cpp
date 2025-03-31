@@ -292,15 +292,13 @@ auto json::dump(const json& _n) -> std::string {
     return dumper(_n)();
 }
 auto json::dump(const json& _n, std::ofstream& _ofs) -> void {
-    const std::string _json = dumper(_n)();
-    _ofs << _json;
+    _ofs << dumper(_n)();
 }
 auto json::dump() const -> std::string {
-    return dumper(*this)();
+    return dump(*this);
 }
 auto json::dump(std::ofstream& _ofs) const -> void {
-    const std::string _json = dumper(*this)();
-    _ofs << _json;
+    dump(*this, _ofs);
 }
 
 }

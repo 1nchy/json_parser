@@ -6,6 +6,15 @@ namespace icy {
 
 dumper::dumper(const json& _json) : _json(_json) {}
 
+auto dumper::operator()() -> std::string {
+    _ss.clear();
+    if (!std::holds_alternative<json::monostate>(_json.value())) {
+        build_value(_json);
+    }
+    return _ss.str();
+}
+
+
 auto dumper::build_boolean(const json& _n) -> void {
     _ss << (_n.value<json::boolean>() ? "true" : "false");
 }
@@ -19,7 +28,19 @@ auto dumper::build_null(const json& _n) -> void {
     _ss << "null";
 }
 auto dumper::build_string(const json& _n) -> void {
-    _M_build_string(_n.value<json::string>());
+    build_string(_n.value<json::string>());
+}
+auto dumper::build_string(const json::string& _s) -> void {
+    _ss << '\"';
+    for (const char _c : _s) {
+        if (auto _x = char_2_esc(_c)) {
+            _ss << '\\' << _x;
+        }
+        else {
+            _ss << _c;
+        }
+    }
+    _ss << '\"';
 }
 auto dumper::build_array(const json& _n) -> void {
     _ss << '[';
@@ -42,7 +63,7 @@ auto dumper::build_object(const json& _n) -> void {
         if (!_first) {
             _ss << ',';
         }
-        _M_build_string(_k);
+        build_string(_k);
         _ss << ':';
         build_value(_v);
         _first = false;
@@ -71,28 +92,6 @@ auto dumper::build_value(const json& _n) -> void {
     if (std::holds_alternative<json::object>(_n.value())) {
         return build_object(_n);
     }
-}
-
-auto dumper::operator()() -> std::string {
-    _ss.clear();
-    if (std::holds_alternative<json::monostate>(_json.value())) {
-        return "";
-    }
-    build_value(_json);
-    return _ss.str();
-}
-
-auto dumper::_M_build_string(const json::string& _s) -> void {
-    _ss << '\"';
-    for (const char _c : _s) {
-        if (auto _x = char_2_esc(_c)) {
-            _ss << '\\' << _x;
-        }
-        else {
-            _ss << _c;
-        }
-    }
-    _ss << '\"';
 }
 
 }

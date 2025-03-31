@@ -18,17 +18,17 @@ public:
     dumper& operator=(const dumper&) = delete;
     ~dumper() = default;
 public:
+    auto operator()() -> std::string;
+private:
     void build_boolean(const json&);
     void build_integer(const json&);
     void build_floating_point(const json&);
     void build_null(const json&);
     void build_string(const json&);
+    void build_string(const json::string&);
     void build_array(const json&);
     void build_object(const json&);
     void build_value(const json&);
-    auto operator()() -> std::string;
-private:
-    void _M_build_string(const json::string&);
 private:
     const json& _json;
     std::stringstream _ss;
