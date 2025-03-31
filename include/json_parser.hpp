@@ -137,8 +137,6 @@ public:
     static constexpr inline const char* NOT_AN_OBJECT = "not an object";
     static constexpr inline const char* NOT_AN_ARRAY = "not an array";
     static constexpr inline const char* NOT_AN_ARRAY_OR_OBJECT = "not an array or object";
-    static constexpr inline const char* NO_MONOSTATE_ASSIGNMENT = "no monostate assignment";
-    static constexpr inline const char* NO_MONOSTATE_DUMP = "no monostate dump";
 private:
     std::string _msg;
 };

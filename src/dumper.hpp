@@ -21,6 +21,7 @@ public:
     void build_boolean(const json&);
     void build_integer(const json&);
     void build_floating_point(const json&);
+    void build_null(const json&);
     void build_string(const json&);
     void build_array(const json&);
     void build_object(const json&);

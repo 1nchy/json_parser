@@ -15,6 +15,9 @@ auto dumper::build_integer(const json& _n) -> void {
 auto dumper::build_floating_point(const json& _n) -> void {
     _ss << _n.value<json::floating_point>();
 }
+auto dumper::build_null(const json& _n) -> void {
+    _ss << "null";
+}
 auto dumper::build_string(const json& _n) -> void {
     _M_build_string(_n.value<json::string>());
 }
@@ -47,26 +50,26 @@ auto dumper::build_object(const json& _n) -> void {
     _ss << '}';
 }
 auto dumper::build_value(const json& _n) -> void {
+    if (std::holds_alternative<json::monostate>(_n.value())) {
+        return build_null(_n);
+    }
     if (std::holds_alternative<json::boolean>(_n.value())) {
         return build_boolean(_n);
     }
-    else if (std::holds_alternative<json::integer>(_n.value())) {
+    if (std::holds_alternative<json::integer>(_n.value())) {
         return build_integer(_n);
     }
-    else if (std::holds_alternative<json::floating_point>(_n.value())) {
+    if (std::holds_alternative<json::floating_point>(_n.value())) {
         return build_floating_point(_n);
     }
-    else if (std::holds_alternative<json::string>(_n.value())) {
+    if (std::holds_alternative<json::string>(_n.value())) {
         return build_string(_n);
     }
-    else if (std::holds_alternative<json::array>(_n.value())) {
+    if (std::holds_alternative<json::array>(_n.value())) {
         return build_array(_n);
     }
-    else if (std::holds_alternative<json::object>(_n.value())) {
+    if (std::holds_alternative<json::object>(_n.value())) {
         return build_object(_n);
-    }
-    else {
-        throw bad_json(exception::NO_MONOSTATE_DUMP);
     }
 }
 

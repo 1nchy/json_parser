@@ -18,16 +18,10 @@ auto json::operator=(json&& _n) -> json& {
     return operator=(std::move(_n._value));
 }
 auto json::operator=(const value_type& _value) -> json& {
-    if (std::holds_alternative<monostate>(_value)) {
-        throw bad_cast(exception::NO_MONOSTATE_ASSIGNMENT);
-    }
     this->_value = _value;
     return *this;
 }
 auto json::operator=(value_type&& _value) -> json& {
-    if (std::holds_alternative<monostate>(_value)) {
-        throw bad_cast(exception::NO_MONOSTATE_ASSIGNMENT);
-    }
     this->_value = std::move(_value);
     return *this;
 }

@@ -129,6 +129,7 @@ auto loader::parse_object() -> tl::expected<json, bad_content> {
  */
 auto loader::parse_literal() -> tl::expected<json, bad_content> {
     const std::vector<std::pair<size_t, tl::expected<json, bad_content>>> _results {
+        _M_parse_literal(_null_fsm),
         _M_parse_literal(_boolean_fsm),
         _M_parse_literal(_integer_fsm, exception::END_OF_NUMBER_EXPECTED),
         _M_parse_literal(_floating_point_fsm, exception::END_OF_NUMBER_EXPECTED),
