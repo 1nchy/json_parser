@@ -4,6 +4,7 @@
 #include "dfa/boolean.hpp"
 #include "dfa/floating_point.hpp"
 #include "dfa/integer.hpp"
+#include "dfa/null.hpp"
 #include "dfa/string.hpp"
 
 #include "tl/expected.hpp"
@@ -55,6 +56,7 @@ private:
     fsm::context<boolean_state> _boolean_fsm;
     fsm::context<floating_point_state> _floating_point_fsm;
     fsm::context<integer_state> _integer_fsm;
+    fsm::context<null_state> _null_fsm;
     fsm::context<string_state> _string_fsm;
     const std::string& _json;
     pointer _ptr;

@@ -1,64 +1,16 @@
 #include "loader.hpp"
 
 #include "json_parser.hpp"
+#include "dfa/initialize.hpp"
 
 namespace icy {
 
 loader::loader(const std::string& _json) : _json(_json) {
-    _boolean_fsm.enroll<
-        boolean_state::X,
-        boolean_state::F,
-        boolean_state::A,
-        boolean_state::L,
-        boolean_state::S,
-        boolean_state::T,
-        boolean_state::R,
-        boolean_state::U,
-        boolean_state::E
-    >();
-    _boolean_fsm.accept<
-        boolean_state::E
-    >();
-    _boolean_fsm.default_entry<
-        boolean_state::X
-    >();
-    _floating_point_fsm.enroll<
-        floating_point_state::AB,
-        floating_point_state::B,
-        floating_point_state::C,
-        floating_point_state::D,
-        floating_point_state::E
-    >();
-    _floating_point_fsm.accept<
-        floating_point_state::E
-    >();
-    _floating_point_fsm.default_entry<
-        floating_point_state::AB
-    >();
-    _integer_fsm.enroll<
-        integer_state::AB,
-        integer_state::B,
-        integer_state::CD
-    >();
-    _integer_fsm.accept<
-        integer_state::CD
-    >();
-    _integer_fsm.default_entry<
-        integer_state::AB
-    >();
-    _string_fsm.enroll<
-        string_state::A,
-        string_state::BE,
-        string_state::C,
-        string_state::BDE,
-        string_state::F
-    >();
-    _string_fsm.accept<
-        string_state::F
-    >();
-    _string_fsm.default_entry<
-        string_state::A
-    >();
+    dfa::initialize<boolean_state>(_boolean_fsm);
+    dfa::initialize<floating_point_state>(_floating_point_fsm);
+    dfa::initialize<integer_state>(_integer_fsm);
+    dfa::initialize<null_state>(_null_fsm);
+    dfa::initialize<string_state>(_string_fsm);
 }
 
 /**

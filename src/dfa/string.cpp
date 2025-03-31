@@ -1,5 +1,6 @@
 #include "string.hpp"
 #include "../utils.hpp"
+#include "initialize.hpp"
 
 namespace icy {
 
@@ -26,6 +27,27 @@ auto string_state::assign(const fsm::state& _s) -> void {
 auto string_state::reset() -> void { _length = 0; _str.clear(); _eof = false; }
 auto string_state::length() const -> size_t { return _length; }
 auto string_state::value() const -> type { return _str; }
+
+namespace dfa {
+
+template <> auto initialize<string_state>(fsm::context<string_state>& _fsm) -> void {
+    _fsm.enroll<
+        string_state::A,
+        string_state::BE,
+        string_state::C,
+        string_state::BDE,
+        string_state::F
+    >();
+    _fsm.accept<
+        string_state::F
+    >();
+    _fsm.default_entry<
+        string_state::A
+    >();
+}
+
+}
+
 
 auto string_state::A::handle(const fsm::character::double_quote& _e) -> label_type {
     ++_length;

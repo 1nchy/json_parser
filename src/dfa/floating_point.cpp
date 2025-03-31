@@ -1,5 +1,6 @@
 #include "floating_point.hpp"
 #include "../utils.hpp"
+#include "initialize.hpp"
 
 namespace icy {
 
@@ -32,6 +33,26 @@ auto floating_point_state::reset() -> void {
 }
 auto floating_point_state::length() const -> size_t { return _str.size(); }
 auto floating_point_state::value() const -> type { return from_string<type>(_str); }
+
+namespace dfa {
+
+template <> auto initialize<floating_point_state>(fsm::context<floating_point_state>& _fsm) -> void {
+    _fsm.enroll<
+        floating_point_state::AB,
+        floating_point_state::B,
+        floating_point_state::C,
+        floating_point_state::D,
+        floating_point_state::E
+    >();
+    _fsm.accept<
+        floating_point_state::E
+    >();
+    _fsm.default_entry<
+        floating_point_state::AB
+    >();
+}
+
+}
 
 
 auto floating_point_state::AB::handle(const fsm::character::digit& _e) -> label_type {

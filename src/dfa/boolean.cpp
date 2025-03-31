@@ -1,4 +1,5 @@
 #include "boolean.hpp"
+#include "initialize.hpp"
 
 namespace icy {
 
@@ -26,6 +27,31 @@ auto boolean_state::length() const -> size_t {
 auto boolean_state::value() const -> type {
     return _str.size() == 4;
 }
+
+namespace dfa {
+
+template <> auto initialize<boolean_state>(fsm::context<boolean_state>& _fsm) -> void {
+    _fsm.enroll<
+        boolean_state::X,
+        boolean_state::F,
+        boolean_state::A,
+        boolean_state::L,
+        boolean_state::S,
+        boolean_state::T,
+        boolean_state::R,
+        boolean_state::U,
+        boolean_state::E
+    >();
+    _fsm.accept<
+        boolean_state::E
+    >();
+    _fsm.default_entry<
+        boolean_state::X
+    >();
+}
+
+}
+
 
 auto boolean_state::X::handle(const fsm::character::lower_case& _e) -> label_type {
     _str.push_back(_e.value());

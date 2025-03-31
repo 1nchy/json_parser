@@ -1,5 +1,6 @@
 #include "integer.hpp"
 #include "../utils.hpp"
+#include "initialize.hpp"
 
 namespace icy {
 
@@ -29,6 +30,24 @@ auto integer_state::reset() -> void {
 }
 auto integer_state::length() const -> size_t { return _str.size(); }
 auto integer_state::value() const -> type { return from_string<type>(_str); }
+
+namespace dfa {
+
+template <> auto initialize(fsm::context<integer_state>& _fsm) -> void {
+    _fsm.enroll<
+        integer_state::AB,
+        integer_state::B,
+        integer_state::CD
+    >();
+    _fsm.accept<
+        integer_state::CD
+    >();
+    _fsm.default_entry<
+        integer_state::AB
+    >();
+}
+
+}
 
 
 auto integer_state::AB::handle(const fsm::character::digit& _e) -> label_type {
