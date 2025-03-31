@@ -4,9 +4,16 @@
 using namespace icy;
 
 int main(void) {
+
+    /// const
+
     const auto _m0 = json::load(" ");
-    icy_assert(_m0 == json::monostate());
+    icy_assert(_m0 == json::monostate{});
     icy_assert(json::dump(_m0) == "");
+
+    const auto _m1 = json::load("null");
+    icy_assert(_m1 == json::monostate{});
+    icy_assert(json::dump(_m1) == "");
 
     const auto _b0 = json::load("true");
     icy_assert(_b0 == true);
@@ -43,6 +50,18 @@ int main(void) {
     const auto _s2 = json::load("\"c++ ?\\nc with class !\"");
     icy_assert(_s2 == "c++ ?\nc with class !");
     icy_assert(json::dump(_s2) == "\"c++ ?\\nc with class !\"");
+
+    const auto _l0 = json::load("[true, 1.0, null, {}]");
+    icy_assert(_l0[0] == true);
+    icy_assert(_l0[1] == 1.0);
+    icy_assert(_l0[2] == json::monostate{});
+    icy_assert(_l0[3].value<json::object>().empty());
+    icy_assert(json::dump(_l0) == "[true,1,null,{}]");
+
+    const auto _o0 = json::load("{\"one\": 1, \"two\": 2}");
+    icy_assert(_o0["one"] == 1);
+    icy_assert(_o0["two"] == 2);
+    icy_assert(json::dump(_o0) == "{\"one\":1,\"two\":2}");
 
     return 0;
 }
