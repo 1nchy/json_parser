@@ -12,7 +12,28 @@ auto json::operator=(const json& _n) -> json& {
     if (this == &_n) {
         return *this;
     }
-    return operator=(_n._value);
+    if (std::holds_alternative<monostate>(_n._value)) {
+        return operator=(_n.value<monostate>());
+    }
+    if (std::holds_alternative<boolean>(_n._value)) {
+        return operator=(_n.value<boolean>());
+    }
+    if (std::holds_alternative<integer>(_n._value)) {
+        return operator=(_n.value<integer>());
+    }
+    if (std::holds_alternative<floating_point>(_n._value)) {
+        return operator=(_n.value<floating_point>());
+    }
+    if (std::holds_alternative<string>(_n._value)) {
+        return operator=(_n.value<string>());
+    }
+    if (std::holds_alternative<array>(_n._value)) {
+        return operator=(_n.value<array>());
+    }
+    if (std::holds_alternative<object>(_n._value)) {
+        return operator=(_n.value<object>());
+    }
+    return operator=(_n._value); // wouldn't reach
 }
 auto json::operator=(json&& _n) -> json& {
     return operator=(std::move(_n._value));

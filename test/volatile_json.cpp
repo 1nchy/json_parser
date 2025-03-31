@@ -20,7 +20,7 @@ int main(void) {
     icy_assert(_j0.size() == 3);
     _j0["all_values"] = _j0["all_values"][0];
     _j0.erase("contains(zero)");
-    // icy_assert(_j0["all_values"] == _j0["zero"]);
+    icy_assert(_j0["all_values"] == _j0["zero"]);
 
     return 0;
 }
