@@ -21,4 +21,4 @@ endmacro(icy_add_test)
 
 icy_add_test(basic_json)
 icy_add_test(nested_json)
-icy_add_test(exception_handle)
+icy_add_test(bad_content)
