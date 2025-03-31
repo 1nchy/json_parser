@@ -62,7 +62,13 @@ public:
     void insert(const string&, value_type&&);
     void erase(const string&);
     void clear();
+    auto empty() const -> bool;
     auto size() const -> size_t;
+    auto at(const string&) -> json&;
+    auto at(const string&) const -> const json&;
+    auto at(size_t) -> json&;
+    auto at(size_t) const -> const json&;
+    auto contains(const string&) const -> bool;
     auto value() -> value_type&;
     auto value() const -> const value_type&;
     template<typename _Tp> auto value() -> _Tp&;

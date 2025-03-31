@@ -48,22 +48,13 @@ auto json::operator[](const string& _k) -> json& {
     throw bad_cast(exception::NOT_AN_OBJECT);
 }
 auto json::operator[](const string& _k) const -> const json& {
-    if (auto _ptr = std::get_if<object>(&_value)) {
-        return _ptr->at(_k);
-    }
-    throw bad_cast(exception::NOT_AN_OBJECT);
+    return this->at(_k);
 }
 auto json::operator[](size_t _i) -> json& {
-    if (auto _ptr = std::get_if<array>(&_value)) {
-        return _ptr->at(_i);
-    }
-    throw bad_cast(exception::NOT_AN_OBJECT);
+    return this->at(_i);
 }
 auto json::operator[](size_t _i) const -> const json& {
-    if (auto _ptr = std::get_if<array>(&_value)) {
-        return _ptr->at(_i);
-    }
-    throw bad_cast(exception::NOT_AN_OBJECT);
+    return this->at(_i);
 }
 
 
@@ -189,6 +180,18 @@ void json::clear() {
     }
     throw bad_cast(exception::NOT_AN_ARRAY_OR_OBJECT);
 }
+auto json::empty() const -> bool {
+    if (std::holds_alternative<monostate>(_value)) {
+        return true;
+    }
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->empty();
+    }
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->empty();
+    }
+    throw bad_cast(exception::NOT_AN_ARRAY_OR_OBJECT);
+}
 auto json::size() const -> size_t {
     if (std::holds_alternative<monostate>(_value)) {
         return 0;
@@ -200,6 +203,36 @@ auto json::size() const -> size_t {
         return _ptr->size();
     }
     throw bad_cast(exception::NOT_AN_ARRAY_OR_OBJECT);
+}
+auto json::at(const string& _k) -> json& {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->at(_k);
+    }
+    throw bad_cast(exception::NOT_AN_OBJECT);
+}
+auto json::at(const string& _k) const -> const json& {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->at(_k);
+    }
+    throw bad_cast(exception::NOT_AN_OBJECT);
+}
+auto json::at(size_t _i) -> json& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->at(_i);
+    }
+    throw bad_cast(exception::NOT_AN_OBJECT);
+}
+auto json::at(size_t _i) const -> const json& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->at(_i);
+    }
+    throw bad_cast(exception::NOT_AN_OBJECT);
+}
+auto json::contains(const string& _k) const -> bool {
+    if (auto _ptr = std::get_if<object>(&_value)) {
+        return _ptr->contains(_k);
+    }
+    throw bad_cast(exception::NOT_AN_OBJECT);
 }
 auto json::value() -> value_type& {
     return _value;
