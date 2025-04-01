@@ -14,6 +14,7 @@ struct dumper {
     using exception = json::exception;
 public:
     dumper(const json&);
+    dumper(const json&, size_t);
     dumper(const dumper&) = delete;
     dumper& operator=(const dumper&) = delete;
     ~dumper() = default;
@@ -29,9 +30,14 @@ private:
     void build_array(const json&);
     void build_object(const json&);
     void build_value(const json&);
+    void build_array(const json&, size_t);
+    void build_object(const json&, size_t);
+    void build_value(const json&, size_t);
+    void break_line_with_indents(size_t _depth);
 private:
     const json& _json;
     std::stringstream _ss;
+    const size_t _indent;
 };
 
 }

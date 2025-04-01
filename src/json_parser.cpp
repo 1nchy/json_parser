@@ -291,14 +291,14 @@ auto json::load(std::ifstream& _ifs) -> json {
 auto json::dump(const json& _n) -> std::string {
     return dumper(_n)();
 }
-auto json::dump(const json& _n, std::ofstream& _ofs) -> void {
-    _ofs << dumper(_n)();
+auto json::dump(const json& _n, std::ofstream& _ofs, size_t _indent) -> void {
+    _ofs << dumper(_n, _indent)();
 }
 auto json::dump() const -> std::string {
     return dump(*this);
 }
-auto json::dump(std::ofstream& _ofs) const -> void {
-    dump(*this, _ofs);
+auto json::dump(std::ofstream& _ofs, size_t _indent) const -> void {
+    dump(*this, _ofs, _indent);
 }
 
 }

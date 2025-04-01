@@ -101,7 +101,7 @@ public:
      * @param _ofs json file output stream
      * @throw bad_json
      */
-    static auto dump(const json&, std::ofstream&) -> void;
+    static auto dump(const json&, std::ofstream&, size_t _indent = 0) -> void;
     /**
      * @brief dump json to string
      * @return ascii string
@@ -113,7 +113,7 @@ public:
      * @param _ofs json file output stream
      * @throw bad_json
      */
-    auto dump(std::ofstream&) const -> void;
+    auto dump(std::ofstream&, size_t _indent = 0) const -> void;
 private:
     value_type _value;
 };
