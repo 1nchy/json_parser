@@ -2,7 +2,7 @@
 
 A naive json parser, just for practise.
 
-### ENVIRONMENT
+## ENVIRONMENT
 
 C++20 standard is required.
 
@@ -12,16 +12,16 @@ Here are third libraries:
 [1nchy/finite_state_machine](https://github.com/1nchy/finite_state_machine), 
 [tl/expected](https://github.com/TartanLlama/expected)
 
-### USAGE
+## USAGE
 
 This is a library including header files and source files.
 
 For more details about the structure, view 
 [1nchy/third_lib_template](https://github.com/1nchy/third_lib_template).
 
-### EXAMPLE
+## EXAMPLE
 
-##### Read JSON from a string or file
+#### Read JSON from a string or file
 
 The `json` class provides APIs `json::load` to create a `json` value.
 
@@ -44,7 +44,7 @@ try { json j = json::load("[,]"); }
 catch (const json::bad_content& e) {} // e.what() == "value expected"
 ~~~
 
-##### Dump JSON to a string or file
+#### Dump JSON to a string or file
 
 The `json` class provides APIs `json::dump` to dump `json` value.
 
@@ -70,7 +70,7 @@ which is used to format the dump.
 When `indent` argument is not provided or equal to 0,
 The dump would not be formatted, and there is no spaces in the dump.
 
-##### STL-like access
+#### STL-like access
 
 Create an array using STL-like method.
 
@@ -97,7 +97,7 @@ j.clear(); // nothing in object
 ~~~
 
 Some methods are only availiable for certain types.
-If an appropriate method is called,
+If an inappropriate method is called,
 exception `json::bad_cast` will be thrown.
 Additionally, the exception would take an error message.
 
@@ -124,7 +124,7 @@ json j; // j is monostate
 j.push(0); // j is an array now
 ~~~
 
-##### Access value
+#### Access value
 
 Template `json::value` provide the ability of accessing value.
 
