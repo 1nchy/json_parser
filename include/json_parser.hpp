@@ -52,6 +52,7 @@ public:
     /**
      * @brief access value (create value if the key does not exist)
      * @throw `bad_cast` if not an object
+     * @note monostate -> object
      */
     auto operator[](const string&) -> json&;
     /**

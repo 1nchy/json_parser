@@ -64,6 +64,9 @@ auto json::operator!=(const value_type& _rhs) const -> bool {
 
 
 auto json::operator[](const string& _k) -> json& {
+    if (std::holds_alternative<monostate>(_value)) {
+        return (*this = object())[_k];
+    }
     if (auto _ptr = std::get_if<object>(&_value)) {
         return (*_ptr)[_k];
     }

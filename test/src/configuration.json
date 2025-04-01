@@ -1,16 +1,32 @@
 {
+    "cmake_build_type": "Release",
     "configurations": {
-        "nested_array": [[0],1,[2,[3],[]]],
         "escape": {
             "": "",
-            "t": "\t",
-            "n": "\n"
-        }
+            "n": "\n",
+            "t": "\t"
+        },
+        "nested_array": [
+            [
+                0
+            ],
+            1,
+            [
+                2,
+                [
+                    3
+                ],
+                []
+            ]
+        ]
     },
     "cxx_standard": [
-        99, 11, 14, 17, 20
+        99,
+        11,
+        14,
+        17,
+        20
     ],
-    "cmake_build_type": "Release",
     "include_directories": [
         "/usr/include",
         "${workspaceFolder}/include",
