@@ -38,6 +38,9 @@ public:
     json(value_type&& _value);
     ~json() = default;
 public:
+    /**
+     * @note copy value for hierarchical assignment
+     */
     auto operator=(const json&) -> json&;
     auto operator=(json&&) -> json&;
     auto operator=(const value_type&) -> json&;
@@ -46,74 +49,197 @@ public:
     auto operator==(const value_type&) const -> bool;
     auto operator!=(const json&) const -> bool;
     auto operator!=(const value_type&) const -> bool;
+    /**
+     * @brief access value (create value if the key does not exist)
+     * @throw `bad_cast` if not an object
+     */
     auto operator[](const string&) -> json&;
+    /**
+     * @brief access value
+     * @throw `bad_cast` if not an object
+     */
     auto operator[](const string&) const -> const json&;
+    /**
+     * @brief access element
+     * @throw `bad_cast` if not an array
+     */
     auto operator[](size_t) -> json&;
+    /**
+     * @brief access element
+     * @throw `bad_cast` if not an array
+     */
     auto operator[](size_t) const -> const json&;
 public:
+    /**
+     * @brief push element
+     * @throw `bad_cast` if not an array
+     * @note monostate -> array
+     */
     void push(const json&);
+    /**
+     * @brief push element
+     * @throw `bad_cast` if not an array
+     * @note monostate -> array
+     */
     void push(json&&);
+    /**
+     * @brief push element
+     * @throw `bad_cast` if not an array
+     * @note monostate -> array
+     */
     void push(const value_type&);
+    /**
+     * @brief push element
+     * @throw `bad_cast` if not an array
+     * @note monostate -> array
+     */
     void push(value_type&&);
+    /**
+     * @brief push element
+     * @throw `bad_cast` if not an array
+     * @note monostate -> monostate
+     */
     void pop();
+    /**
+     * @brief insert key and value
+     * @throw `bad_cast` if not an object
+     * @note monostate -> object
+     */
     void insert(const string&, const json&);
+    /**
+     * @brief insert key and value
+     * @throw `bad_cast` if not an object
+     * @note monostate -> object
+     */
     void insert(const string&, json&&);
+    /**
+     * @brief insert key and value
+     * @throw `bad_cast` if not an object
+     * @note monostate -> object
+     */
     void insert(const string&, const value_type&);
+    /**
+     * @brief insert key and value
+     * @throw `bad_cast` if not an object
+     * @note monostate -> object
+     */
     void insert(const string&, value_type&&);
+    /**
+     * @brief insert key and value
+     * @throw `bad_cast` if not an object
+     * @note monostate -> monostate
+     */
     void erase(const string&);
+    /**
+     * @brief clear
+     * @throw `bad_cast` if not an array or object
+     * @note monostate -> monostate
+     */
     void clear();
+    /**
+     * @brief empty
+     * @return whether empty or monostate
+     * @throw `bad_cast` if not an array or object
+     * @note monostate -> monostate
+     */
     auto empty() const -> bool;
+    /**
+     * @brief size
+     * @return container size or 0 if monostate
+     * @throw `bad_cast` if not an array or object
+     * @note monostate -> monostate
+     */
     auto size() const -> size_t;
+    /**
+     * @brief access value
+     * @throw `bad_cast` if not an object
+     */
     auto at(const string&) -> json&;
+    /**
+     * @brief access value
+     * @throw `bad_cast` if not an object
+     */
     auto at(const string&) const -> const json&;
+    /**
+     * @brief access element
+     * @throw `bad_cast` if not an array
+     */
     auto at(size_t) -> json&;
+    /**
+     * @brief access element
+     * @throw `bad_cast` if not an array
+     */
     auto at(size_t) const -> const json&;
+    /**
+     * @brief whether the key exists
+     * @throw `bad_cast` if not an object
+     */
     auto contains(const string&) const -> bool;
+    /**
+     * @brief return variant
+     */
     auto value() -> value_type&;
+    /**
+     * @brief return variant
+     */
     auto value() const -> const value_type&;
+    /**
+     * @brief return data
+     * @tparam _Tp data type
+     * @throw `bad_cast` if a wrong type is given
+     */
     template<typename _Tp> auto value() -> _Tp&;
+    /**
+     * @brief return data
+     * @tparam _Tp data type
+     * @throw `bad_cast` if a wrong type is given
+     */
     template<typename _Tp> auto value() const -> const _Tp&;
 public:
     /**
      * @brief load string to json
      * @param _s ascii string
      * @return json
-     * @throw bad_content
+     * @throw `bad_content`
      */
-    static auto load(const std::string&) -> json;
+    static auto load(const std::string& _s) -> json;
     /**
      * @brief load file stream to json
      * @param _ifs json file input stream
      * @return json
-     * @throw bad_content
+     * @throw `bad_content`
      */
-    static auto load(std::ifstream&) -> json;
+    static auto load(std::ifstream& _ifs) -> json;
     /**
      * @brief dump json to string
      * @param _n json
      * @return ascii string
-     * @throw bad_json
+     * @throw `bad_json`
      */
-    static auto dump(const json&) -> std::string;
+    static auto dump(const json& _n) -> std::string;
     /**
      * @brief dump json to file stream
      * @param _n json
      * @param _ofs json file output stream
-     * @throw bad_json
+     * @param _indent indent for json file (0 by default)
+     * @note no formatting when `_indent == 0`
+     * @throw `bad_json`
      */
-    static auto dump(const json&, std::ofstream&, size_t _indent = 0) -> void;
+    static auto dump(const json&, std::ofstream& _ofs, size_t _indent = 0) -> void;
     /**
      * @brief dump json to string
      * @return ascii string
-     * @throw bad_json
+     * @throw `bad_json`
      */
     auto dump() const -> std::string;
     /**
      * @brief dump json to file stream
      * @param _ofs json file output stream
-     * @throw bad_json
+     * @param _indent indent for json file (0 by default)
+     * @note no formatting when `_indent == 0`
+     * @throw `bad_json`
      */
-    auto dump(std::ofstream&, size_t _indent = 0) const -> void;
+    auto dump(std::ofstream& _ofs, size_t _indent = 0) const -> void;
 private:
     value_type _value;
 };

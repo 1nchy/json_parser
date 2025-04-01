@@ -8,6 +8,7 @@ namespace icy {
 json::json() : _value(monostate()) {}
 json::json(const value_type& _value) : _value(_value) {}
 json::json(value_type&& _value) : _value(std::move(_value)) {}
+
 auto json::operator=(const json& _n) -> json& {
     if (this == &_n) {
         return *this;
