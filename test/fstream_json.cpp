@@ -2,11 +2,48 @@
 #include "utils.hpp"
 #include "json_parser.hpp"
 
+#include <cstring>
+
 using namespace icy;
 
+auto equal_files(const std::filesystem::path& _x, const std::filesystem::path& _y) -> bool {
+    if (!std::filesystem::exists(_x) || !std::filesystem::exists(_y)) {
+        return false;
+    }
+    if (std::filesystem::file_size(_x) != std::filesystem::file_size(_y)) {
+        return false;
+    }
+    std::ifstream _fx(_x, std::ios::binary);
+    std::ifstream _fy(_y, std::ios::binary);
+    if (!_fx || !_fy) { return false; }
+    constexpr size_t BUFFER_SIZE = 4096; // 每次读取 4KB
+    char buffer1[BUFFER_SIZE];
+    char buffer2[BUFFER_SIZE];
+    while (!_fx.eof() && !_fy.eof()) {
+        _fx.read(buffer1, BUFFER_SIZE);
+        _fy.read(buffer2, BUFFER_SIZE);
+        if (_fx.gcount() != _fy.gcount()) {
+            return false;
+        }
+        if (memcmp(buffer1, buffer2, static_cast<size_t>(_fx.gcount())) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+auto remove_file(const std::filesystem::path& _file) -> bool {
+    if (!std::filesystem::exists(_file)) {
+        return false;
+    }
+    if (!std::filesystem::is_regular_file(_file)) {
+        return false;
+    }
+    return std::filesystem::remove(_file);
+}
+
 int main(void) {
-    const auto _dir = from_here("src", "configuration.json");
-    std::ifstream _ifs(_dir.string());
+    const auto _old = from_here("src", "configuration.json");
+    std::ifstream _ifs(_old.string());
     auto _ij = json::load(_ifs);
     auto _summary = json::load("{}");
     icy_assert(_ij["version"] == 1);
@@ -21,7 +58,6 @@ int main(void) {
     icy_assert(_na0[1] == 1);
     _ifs.close();
 
-    // std::ofstream _ofs(from_here("src", "new_configuration.json").string());
     json _oj;
     _oj.insert("cmake_build_type", "Release");
     _oj.insert("project", "json\tparser");
@@ -56,6 +92,11 @@ int main(void) {
     _esc.insert("", "");
     _esc.insert("t", "\t");
     _esc.insert("n", "\n");
-    // json::dump(_oj, _ofs, 4);
+    const auto _new = std::filesystem::current_path() / "configuration.json";
+    std::ofstream _ofs(_new.string());
+    json::dump(_oj, _ofs, 4);
+    _ofs.close();
+    const auto _ef = equal_files(_old, _new);
+    icy_assert(remove_file(_new) && _ef);
     return 0;
 }
