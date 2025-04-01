@@ -16,8 +16,8 @@ Here are third libraries:
 
 This is a library including header files and source files.
 
-For more details about the structure, view [1nchy/third_lib_template]
-(https://github.com/1nchy/third_lib_template).
+For more details about the structure, view 
+[1nchy/third_lib_template](https://github.com/1nchy/third_lib_template).
 
 ### EXAMPLE
 
