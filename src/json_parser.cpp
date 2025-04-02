@@ -245,13 +245,13 @@ auto json::at(size_t _i) -> json& {
     if (auto _ptr = std::get_if<array>(&_value)) {
         return _ptr->at(_i);
     }
-    throw bad_cast(exception::NOT_AN_OBJECT);
+    throw bad_cast(exception::NOT_AN_ARRAY);
 }
 auto json::at(size_t _i) const -> const json& {
     if (auto _ptr = std::get_if<array>(&_value)) {
         return _ptr->at(_i);
     }
-    throw bad_cast(exception::NOT_AN_OBJECT);
+    throw bad_cast(exception::NOT_AN_ARRAY);
 }
 auto json::contains(const string& _k) const -> bool {
     if (auto _ptr = std::get_if<object>(&_value)) {

@@ -64,7 +64,7 @@ j.dump(file, 4); // json::dump(j, file, 4);
 `json` class provides member methods and static methods for dumping.
 The `json` value would be the first argument in static methods.
 
-Methods for dumping to file provide an additional arugment `indent`,
+Methods for dumping to file provide an additional argument `indent`,
 which is used to format the dump.
 
 When `indent` argument is not provided or equal to 0,
@@ -117,16 +117,29 @@ catch (const json::bad_cast& e) {} // e.what() == "not an array"
 
 Specially, monostate json can call most of methods without exception.
 It would transit to a type,
-if the method is only available for the certain type.
+if the method is only available for the certain type,
 
 ~~~c++
 json j; // j is monostate
 j.push(0); // j is an array now
 ~~~
 
+But if the method has not changed itself,
+such as `pop`, `erase`, and member methods with `const` modifier,
+the json type will not transit.
+
+~~~c++
+json j; // j is monostate
+j.pop(); // j is still monostate
+j.erase("zero"); // j is still monostate
+j.clear(); // j is still monostate
+j.empty(); // j is still monostate
+j.size(); // j is still monostate
+~~~
+
 #### Access value
 
-Template `json::value` provide the ability of accessing value.
+Template `json::value` provides the ability of accessing value.
 
 In comparison or assignment, we overwrote relative operator,
 and there's no need to access value directly.

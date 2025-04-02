@@ -257,6 +257,7 @@ public:
     virtual ~exception() noexcept = default;
     virtual const char* what() const noexcept;
 public:
+    /// @brief bad_content message
     static constexpr inline const char* RIGHT_CURLY_EXPECTED = "right curly expected";
     static constexpr inline const char* RIGHT_SQUARE_EXPECTED = "right square expected";
     static constexpr inline const char* TRAILING_COMMA = "trailing comma";
@@ -266,9 +267,10 @@ public:
     static constexpr inline const char* END_OF_NUMBER_EXPECTED = "end of number expected";
     static constexpr inline const char* END_OF_STRING_EXPECTED = "end of string expected";
     static constexpr inline const char* END_OF_FILE_EXPECTED = "end of file expected";
+    /// @brief bad_cast message
     static constexpr inline const char* NOT_THE_TYPE = "not the type";
-    static constexpr inline const char* NOT_AN_OBJECT = "not an object";
     static constexpr inline const char* NOT_AN_ARRAY = "not an array";
+    static constexpr inline const char* NOT_AN_OBJECT = "not an object";
     static constexpr inline const char* NOT_AN_ARRAY_OR_OBJECT = "not an array or object";
 private:
     std::string _msg;
