@@ -259,7 +259,7 @@ public:
     static auto make_object() -> json;
     /**
      * @brief construct `json` from `initializer_list`
-     * @note treat all `initializer_list` as object whenever possible
+     * @note treat all `initializer_list` as object
      * @throw `bad_cast` if the `initializer_list` can't be treated as object
      */
     static auto make_object(std::initializer_list<json>) -> json;

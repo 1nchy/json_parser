@@ -70,6 +70,41 @@ which is used to format the dump.
 When `indent` argument is not provided or equal to 0,
 The dump would not be formatted, and there is no spaces in the dump.
 
+#### JSON construction / assignment in code
+
+Excluding the normal constructor,
+`initializer_list` provides a more convenient way to construct array or object.
+Constructors deduce json type according to details in `initializer_list`.
+
+Specifically, an `initializer_list` will be treated as key-value pair,
+only if **all of elements contains 2 elements and the type of the first one is string**.
+
+~~~c++
+json j1 {1, 2, 3}; // [1, 2, 3]
+json j2 {{"one", 1}, {"two", 2}}; // {"one": 1, "two": 2}
+json j3 {{"one", 1}, {"two", 2}, {true, 3}}; // [["one", 1], ["two", 2], [true, 3]]
+~~~
+
+For some ambiguous circumstance,
+`json::make_array` and `json::make_object` will treat `initializer_list`
+as array and key-value pair respectively.
+
+~~~c++
+json j1 = json::make_array({1, 2, 3}); // [1, 2, 3]
+json j2 = json::make_array({{"one", 1}, {"two", 2}}); // [["one", 1], ["two", 2]]
+json j3 = json::make_object({{"one", 1}, {"two", 2}}); // {"one": 1, "two": 2}
+~~~
+
+`operator=` has been overridden in `json` class,
+so the value can be assigned directly.
+
+~~~c++
+json j = json::make_array(); // array
+j = 1; // integer now
+j = true; // boolean now
+j = json::make_object(); // object
+~~~
+
 #### STL-like access
 
 Create an array using STL-like method.
