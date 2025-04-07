@@ -45,20 +45,25 @@ int main(void) {
         _j.erase("zero");
         _j.push(0);
     }));
+    icy_assert(no_exception([](){
+        json _j = json();
+        _j.insert("zero", 0);
+        _j.as<json::integer>(0);
+    }));
 
 
 
     icy_assert(about_bad_cast(exception::NOT_THE_TYPE, [](){
-        json::load("{}").value<json::array>();
+        json::load("{}").as<json::integer>();
     }));
     icy_assert(about_bad_cast(exception::NOT_THE_TYPE, [](){
-        json::load("[]").value<json::object>();
+        json::load("[]").as<json::string>();
     }));
     icy_assert(about_bad_cast(exception::NOT_THE_TYPE, [](){
-        json::load("").value<json::integer>();
+        json::load("").as<json::integer>();
     }));
     icy_assert(about_bad_cast(exception::NOT_THE_TYPE, [](){
-        json::load("3.14").value<json::integer>();
+        json::load("3.14").as<json::integer>();
     }));
 
 
@@ -98,6 +103,11 @@ int main(void) {
         _j.insert("one", 1);
         _j.at(2);
     }));
+    icy_assert(about_bad_cast(exception::NOT_AN_ARRAY, [](){
+        json _j = json();
+        _j.insert("one", 1);
+        _j.as<json::array>();
+    }));
 
     icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
         json::load("[]").insert("zero", 0);
@@ -128,6 +138,11 @@ int main(void) {
         json _j = json();
         _j.push("zero");
         _j.erase("zero");
+    }));
+    icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
+        json _j = json();
+        _j.push("zero");
+        _j.as<json::object>();
     }));
 
 

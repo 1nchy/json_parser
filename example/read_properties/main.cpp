@@ -11,9 +11,9 @@ using std::endl;
 int main(void) {
     std::ifstream _input("src/properties.json");
     auto _json = json::load(_input);
-    cout << "platform = " << _json["configurations"][0]["name"].value<json::string>() << endl;
-    cout << "first standard = " << _json["configurations"][0]["supported_standard"][0].value<json::integer>() << endl;
-    cout << "version = " << _json["version"].value<json::floating_point>() << endl;
+    cout << "platform = " << _json["configurations"][0]["name"].as<json::string>() << endl;
+    cout << "first standard = " << _json["configurations"][0]["supported_standard"][0].as<json::integer>() << endl;
+    cout << "version = " << _json["version"].as<json::floating_point>() << endl;
     _json["configurations"][0]["name"] = "Ubuntu\t20.04";
     _json["configurations"][0]["includePath"].clear();
     _json["configurations"][0]["includePath"] = "/usr/include";

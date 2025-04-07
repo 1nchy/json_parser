@@ -23,19 +23,19 @@ auto dumper::operator()() -> std::string {
 
 
 auto dumper::build_boolean(const json& _n) -> void {
-    _ss << (_n.value<json::boolean>() ? "true" : "false");
+    _ss << (_n.as<json::boolean>() ? "true" : "false");
 }
 auto dumper::build_integer(const json& _n) -> void {
-    _ss << _n.value<json::integer>();
+    _ss << _n.as<json::integer>();
 }
 auto dumper::build_floating_point(const json& _n) -> void {
-    _ss << _n.value<json::floating_point>();
+    _ss << _n.as<json::floating_point>();
 }
 auto dumper::build_null(const json& _n) -> void {
     _ss << "null";
 }
 auto dumper::build_string(const json& _n) -> void {
-    build_string(_n.value<json::string>());
+    build_string(_n.as<json::string>());
 }
 auto dumper::build_string(const json::string& _s) -> void {
     _ss << '\"';
@@ -51,7 +51,7 @@ auto dumper::build_string(const json::string& _s) -> void {
 }
 auto dumper::build_array(const json& _n) -> void {
     _ss << '[';
-    const auto& _array = _n.value<json::array>();
+    const auto& _array = _n.as<json::array>();
     bool _first = true;
     for (const auto& _v : _array) {
         if (!_first) {
@@ -64,7 +64,7 @@ auto dumper::build_array(const json& _n) -> void {
 }
 auto dumper::build_object(const json& _n) -> void {
     _ss << '{';
-    const auto& _object = _n.value<json::object>();
+    const auto& _object = _n.as<json::object>();
     bool _first = true;
     for (const auto& [_k, _v] : _object) {
         if (!_first) {
@@ -102,7 +102,7 @@ auto dumper::build_value(const json& _n) -> void {
 }
 auto dumper::build_array(const json& _n, size_t _depth) -> void {
     _ss << '[';
-    const auto& _array = _n.value<json::array>();
+    const auto& _array = _n.as<json::array>();
     bool _first = true;
     for (const auto& _v : _array) {
         if (!_first) {
@@ -119,7 +119,7 @@ auto dumper::build_array(const json& _n, size_t _depth) -> void {
 }
 auto dumper::build_object(const json& _n, size_t _depth) -> void {
     _ss << '{';
-    const auto& _object = _n.value<json::object>();
+    const auto& _object = _n.as<json::object>();
     bool _first = true;
     for (const auto& [_k, _v] : _object) {
         if (!_first) {

@@ -55,7 +55,7 @@ int main(void) {
     icy_assert(_l0[0] == true);
     icy_assert(_l0[1] == 1.0);
     icy_assert(_l0[2] == json::monostate{});
-    icy_assert(_l0[3].value<json::object>().empty());
+    icy_assert(_l0[3].as<json::object>().empty());
     icy_assert(json::dump(_l0) == "[true,1,null,{}]");
 
     const auto _o0 = json::load("{\"one\": 1, \"two\": 2}");

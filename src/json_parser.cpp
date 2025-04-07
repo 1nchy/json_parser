@@ -14,25 +14,25 @@ auto json::operator=(const json& _n) -> json& {
         return *this;
     }
     if (std::holds_alternative<monostate>(_n._value)) {
-        return operator=(_n.value<monostate>());
+        return operator=(_n.as<monostate>());
     }
     if (std::holds_alternative<boolean>(_n._value)) {
-        return operator=(_n.value<boolean>());
+        return operator=(_n.as<boolean>());
     }
     if (std::holds_alternative<integer>(_n._value)) {
-        return operator=(_n.value<integer>());
+        return operator=(_n.as<integer>());
     }
     if (std::holds_alternative<floating_point>(_n._value)) {
-        return operator=(_n.value<floating_point>());
+        return operator=(_n.as<floating_point>());
     }
     if (std::holds_alternative<string>(_n._value)) {
-        return operator=(_n.value<string>());
+        return operator=(_n.as<string>());
     }
     if (std::holds_alternative<array>(_n._value)) {
-        return operator=(_n.value<array>());
+        return operator=(_n.as<array>());
     }
     if (std::holds_alternative<object>(_n._value)) {
-        return operator=(_n.value<object>());
+        return operator=(_n.as<object>());
     }
     return operator=(_n._value); // wouldn't reach
 }
@@ -265,7 +265,6 @@ auto json::value() -> value_type& {
 auto json::value() const -> const value_type& {
     return _value;
 }
-
 
 
 json::exception::exception(const std::string& _msg) : std::exception(), _msg(_msg) {}

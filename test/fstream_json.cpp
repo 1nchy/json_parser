@@ -48,7 +48,7 @@ int main(void) {
     auto _summary = json::load("{}");
     icy_assert(_ij["version"] == 1);
     icy_assert(_ij["cmake_build_type"] != "Debug");
-    for (const auto& _third : _ij["third"].value<json::array>()) {
+    for (const auto& _third : _ij["third"].as<json::array>()) {
         _summary["acknowledgements"].push(_third);
     }
     icy_assert(json::dump(_summary) == "{\"acknowledgements\":[\"1nchy/finite_state_machine\",\"tl/expected\"]}");

@@ -184,18 +184,10 @@ public:
      * @brief return variant
      */
     auto value() const -> const value_type&;
-    /**
-     * @brief return data
-     * @tparam _Tp data type
-     * @throw `bad_cast` if a wrong type is given
-     */
-    template<typename _Tp> auto value() -> _Tp&;
-    /**
-     * @brief return data
-     * @tparam _Tp data type
-     * @throw `bad_cast` if a wrong type is given
-     */
-    template<typename _Tp> auto value() const -> const _Tp&;
+    template <typename _Tp> auto as() -> _Tp&;
+    template <typename _Tp> auto as() const -> const _Tp&;
+    template <typename _Tp> auto as(const _Tp& _val) const noexcept -> const _Tp&;
+    template <typename _Tp> auto is() const noexcept -> bool;
 public:
     /**
      * @brief load string to json
@@ -318,17 +310,53 @@ public:
 
 
 
-template <typename _Tp> auto json::value() -> _Tp& {
+/**
+ * @brief return data
+ * @tparam _Tp data type
+ * @throw `bad_cast` if a wrong type is given
+ */
+template <typename _Tp> auto json::as() -> _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);
+    }
+    if constexpr (std::is_same<_Tp, array>::value) {
+        throw bad_cast(exception::NOT_AN_ARRAY);
+    }
+    if constexpr (std::is_same<_Tp, object>::value) {
+        throw bad_cast(exception::NOT_AN_OBJECT);
     }
     throw bad_cast(exception::NOT_THE_TYPE);
 }
-template <typename _Tp> auto json::value() const -> const _Tp& {
+/**
+ * @brief return data
+ * @tparam _Tp data type
+ * @throw `bad_cast` if a wrong type is given
+ */
+template <typename _Tp> auto json::as() const -> const _Tp& {
     if (std::holds_alternative<_Tp>(_value)) {
         return std::get<_Tp>(_value);
     }
+    if constexpr (std::is_same<_Tp, array>::value) {
+        throw bad_cast(exception::NOT_AN_ARRAY);
+    }
+    if constexpr (std::is_same<_Tp, object>::value) {
+        throw bad_cast(exception::NOT_AN_OBJECT);
+    }
     throw bad_cast(exception::NOT_THE_TYPE);
+}
+/**
+ * @brief return data
+ * @tparam _Tp data type
+ * @param _val default value
+ */
+template <typename _Tp> auto json::as(const _Tp& _val) const noexcept -> const _Tp& {
+    if (auto _ptr = std::get_if<_Tp>(&_value)) {
+        return *_ptr;
+    }
+    return _val;
+}
+template <typename _Tp> auto json::is() const noexcept -> bool {
+    return std::holds_alternative<_Tp>(_value);
 }
 
 }
