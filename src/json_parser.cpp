@@ -8,6 +8,23 @@ namespace icy {
 json::json() : _value(monostate()) {}
 json::json(const value_type& _value) : _value(_value) {}
 json::json(value_type&& _value) : _value(std::move(_value)) {}
+json::json(std::initializer_list<value_type> _il)
+: _value(monostate()) {
+    for (const auto& _j : _il) { push(_j); }
+}
+json::json(std::initializer_list<json> _il)
+: _value(monostate()) {
+    if (std::all_of(_il.begin(), _il.end(), [](const json& _j) {
+        return _j.is<array>() && _j.size() == 2 && _j[0].is<string>();
+    })) {
+        for (const auto& _j : _il) {
+            insert(_j[0].as<string>(), _j[1]);
+        }
+    }
+    else {
+        for (const auto& _j : _il) { push(_j); }
+    }
+}
 
 auto json::operator=(const json& _n) -> json& {
     if (this == &_n) {
@@ -302,6 +319,35 @@ auto json::dump() const -> std::string {
 }
 auto json::dump(std::ofstream& _ofs, size_t _indent) const -> void {
     dump(*this, _ofs, _indent);
+}
+
+auto json::make_array() -> json {
+    return json(array());
+}
+auto json::make_array(std::initializer_list<value_type> _il) -> json {
+    json _json;
+    for (const auto& _v : _il) { _json.push(_v); }
+    return _json;
+}
+auto json::make_array(std::initializer_list<json> _il) -> json {
+    json _json;
+    for (const auto& _j : _il) { _json.push(_j); }
+    return _json;
+}
+auto json::make_object() -> json {
+    return json(object());
+}
+auto json::make_object(std::initializer_list<json> _il) -> json {
+    if (std::all_of(_il.begin(), _il.end(), [](const json& _j) {
+        return _j.is<array>() && _j.size() == 2 && _j[0].is<string>();
+    })) {
+        json _json;
+        for (const auto& _j : _il) {
+            _json.insert(_j[0].as<string>(), _j[1]);
+        }
+        return _json;
+    }
+    throw bad_cast(exception::NOT_AN_OBJECT);
 }
 
 }

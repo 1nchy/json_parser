@@ -7,6 +7,8 @@
 #include <variant>
 #include <vector>
 
+#include <algorithm>
+#include <initializer_list>
 #include <fstream>
 
 #include <stdexcept>
@@ -36,6 +38,16 @@ public:
     json(json&&) = default;
     json(const value_type& _value);
     json(value_type&& _value);
+    /**
+     * @brief construct `json` from `initializer_list`
+     * @note treat all `initializer_list` as array
+     */
+    json(std::initializer_list<value_type>);
+    /**
+     * @brief construct `json` from `initializer_list`
+     * @note treat all `initializer_list` as object whenever possible, otherwise as array
+     */
+    json(std::initializer_list<json>);
     ~json() = default;
 public:
     /**
@@ -233,6 +245,24 @@ public:
      * @throw `bad_json`
      */
     auto dump(std::ofstream& _ofs, size_t _indent = 0) const -> void;
+public:
+    static auto make_array() -> json;
+    /**
+     * @brief construct `json` from `initializer_list`
+     */
+    static auto make_array(std::initializer_list<value_type>) -> json;
+    /**
+     * @brief construct `json` from `initializer_list`
+     * @note treat all `initializer_list` as array
+     */
+    static auto make_array(std::initializer_list<json>) -> json;
+    static auto make_object() -> json;
+    /**
+     * @brief construct `json` from `initializer_list`
+     * @note treat all `initializer_list` as object whenever possible
+     * @throw `bad_cast` if the `initializer_list` can't be treated as object
+     */
+    static auto make_object(std::initializer_list<json>) -> json;
 private:
     value_type _value;
 };

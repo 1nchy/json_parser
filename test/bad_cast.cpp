@@ -68,6 +68,9 @@ int main(void) {
 
 
     icy_assert(about_bad_cast(exception::NOT_AN_ARRAY, [](){
+        json::make_object().push(0);
+    }));
+    icy_assert(about_bad_cast(exception::NOT_AN_ARRAY, [](){
         json::load("{}").push(0);
     }));
     icy_assert(about_bad_cast(exception::NOT_AN_ARRAY, [](){
@@ -109,6 +112,9 @@ int main(void) {
         _j.as<json::array>();
     }));
 
+    icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
+        json::make_array().insert("zero", 0);
+    }));
     icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
         json::load("[]").insert("zero", 0);
     }));
@@ -157,5 +163,12 @@ int main(void) {
     icy_assert(about_bad_cast(exception::NOT_AN_ARRAY_OR_OBJECT, [](){
         json _j = json("string");
         _j.empty();
+    }));
+
+
+    icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
+        json _j = json::make_object({
+            {"zero", 0}, {"one", 1}, {true, 2}
+        });
     }));
 }

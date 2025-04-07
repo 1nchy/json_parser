@@ -63,5 +63,54 @@ int main(void) {
     icy_assert(_o0["two"] == 2);
     icy_assert(json::dump(_o0) == "{\"one\":1,\"two\":2}");
 
+    const json _j0 {};
+    icy_assert(_j0.is<json::monostate>());
+
+    const json _j1 {2};
+    icy_assert(_j1.is<json::array>());
+
+    const json _j2 {1, 2, 3};
+    icy_assert(_j2.is<json::array>());
+
+    const json _j3 {"zero", 1};
+    icy_assert(_j3.is<json::array>());
+    icy_assert(_j3.dump() == "[\"zero\",1]");
+
+    const json _j4 {
+        {"zero", 0}, {"one", 1}, {2, "two"}
+    };
+    icy_assert(_j4.is<json::array>());
+    icy_assert(_j4.dump() == "[[\"zero\",0],[\"one\",1],[2,\"two\"]]");
+
+    const json _j5 {
+        {"zero", 0}, {"one", 1}, {"two", 2}
+    };
+    icy_assert(_j5.is<json::object>());
+    icy_assert(_j5.dump() == "{\"one\":1,\"two\":2,\"zero\":0}");
+
+    const json _j6 = json::make_array({
+        {"one", 1}, {"two", 2}, {"three", 3}
+    });
+    icy_assert(_j6.is<json::array>());
+    icy_assert(_j6.dump() == "[[\"one\",1],[\"two\",2],[\"three\",3]]");
+
+    const json _j7 = json::make_object({
+        {"one", 1}, {"two", 2}, {"three", 3} 
+    });
+    icy_assert(_j7.is<json::object>());
+    icy_assert(_j7.dump() == "{\"one\":1,\"three\":3,\"two\":2}");
+
+    const json _j8 = json::make_array({
+        0, 1, 2, 3
+    });
+    icy_assert(_j8.is<json::array>());
+    icy_assert(_j8.dump() == "[0,1,2,3]");
+
+    const json _j9 = json::make_array({
+        "one", 2
+    });
+    icy_assert(_j9.is<json::array>());
+    icy_assert(_j9.dump() == "[\"one\",2]");
+
     return 0;
 }
