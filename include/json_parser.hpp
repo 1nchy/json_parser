@@ -114,6 +114,26 @@ public:
      */
     void pop();
     /**
+     * @brief thr first element
+     * @throw `bad_cast` if not an array
+     */
+    auto front() -> json&;
+    /**
+     * @brief thr first element
+     * @throw `bad_cast` if not an array
+     */
+    auto front() const -> const json&;
+    /**
+     * @brief thr last element
+     * @throw `bad_cast` if not an array
+     */
+    auto back() -> json&;
+    /**
+     * @brief thr last element
+     * @throw `bad_cast` if not an array
+     */
+    auto back() const -> const json&;
+    /**
      * @brief insert key and value
      * @throw `bad_cast` if not an object
      * @note monostate -> object
@@ -259,10 +279,19 @@ public:
     static auto make_object() -> json;
     /**
      * @brief construct `json` from `initializer_list`
+     */
+    static auto make_object(std::initializer_list<value_type>) -> json;
+    /**
+     * @brief construct `json` from `initializer_list`
      * @note treat all `initializer_list` as object
      * @throw `bad_cast` if the `initializer_list` can't be treated as object
      */
     static auto make_object(std::initializer_list<json>) -> json;
+private:
+    /**
+     * @brief array -> object
+     */
+    auto deduce() -> json&;
 private:
     value_type _value;
 };

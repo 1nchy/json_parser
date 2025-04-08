@@ -14,16 +14,7 @@ json::json(std::initializer_list<value_type> _il)
 }
 json::json(std::initializer_list<json> _il)
 : _value(monostate()) {
-    if (std::all_of(_il.begin(), _il.end(), [](const json& _j) {
-        return _j.is<array>() && _j.size() == 2 && _j[0].is<string>();
-    })) {
-        for (const auto& _j : _il) {
-            insert(_j[0].as<string>(), _j[1]);
-        }
-    }
-    else {
-        for (const auto& _j : _il) { push(_j); }
-    }
+    for (const auto& _j : _il) { push(_j); }
 }
 
 auto json::operator=(const json& _n) -> json& {
@@ -151,6 +142,30 @@ void json::pop() {
     if (auto _ptr = std::get_if<array>(&_value)) {
         _ptr->pop_back();
         return;
+    }
+    throw bad_cast(exception::NOT_AN_ARRAY);
+}
+auto json::front() -> json& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->front();
+    }
+    throw bad_cast(exception::NOT_AN_ARRAY);
+}
+auto json::front() const -> const json& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->front();
+    }
+    throw bad_cast(exception::NOT_AN_ARRAY);
+}
+auto json::back() -> json& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->back();
+    }
+    throw bad_cast(exception::NOT_AN_ARRAY);
+}
+auto json::back() const -> const json& {
+    if (auto _ptr = std::get_if<array>(&_value)) {
+        return _ptr->back();
     }
     throw bad_cast(exception::NOT_AN_ARRAY);
 }
@@ -325,29 +340,35 @@ auto json::make_array() -> json {
     return json(array());
 }
 auto json::make_array(std::initializer_list<value_type> _il) -> json {
-    json _json;
-    for (const auto& _v : _il) { _json.push(_v); }
-    return _json;
+    return json(_il);
 }
 auto json::make_array(std::initializer_list<json> _il) -> json {
-    json _json;
-    for (const auto& _j : _il) { _json.push(_j); }
-    return _json;
+    return json(_il);
 }
 auto json::make_object() -> json {
     return json(object());
 }
+auto json::make_object(std::initializer_list<value_type> _il) -> json {
+    return json(_il).deduce();
+}
 auto json::make_object(std::initializer_list<json> _il) -> json {
-    if (std::all_of(_il.begin(), _il.end(), [](const json& _j) {
+    return json(_il).deduce();
+}
+
+
+
+auto json::deduce() -> json& {
+    if (!is<array>()) { return *this; }
+    if (std::all_of(as<array>().begin(), as<array>().end(), [](const json& _j) {
         return _j.is<array>() && _j.size() == 2 && _j[0].is<string>();
     })) {
         json _json;
-        for (const auto& _j : _il) {
+        for (const auto& _j : as<array>()) {
             _json.insert(_j[0].as<string>(), _j[1]);
         }
-        return _json;
+        this->operator=(std::move(_json));
     }
-    throw bad_cast(exception::NOT_AN_OBJECT);
+    return *this;
 }
 
 }

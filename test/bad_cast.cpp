@@ -166,9 +166,9 @@ int main(void) {
     }));
 
 
-    icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
-        json _j = json::make_object({
-            {"zero", 0}, {"one", 1}, {true, 2}
-        });
-    }));
+    // icy_assert(about_bad_cast(exception::NOT_AN_OBJECT, [](){
+    //     json _j = json::make_object({
+    //         {"zero", 0}, {"one", 1}, {true, 2}
+    //     });
+    // }));
 }

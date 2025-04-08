@@ -85,8 +85,8 @@ int main(void) {
     const json _j5 {
         {"zero", 0}, {"one", 1}, {"two", 2}
     };
-    icy_assert(_j5.is<json::object>());
-    icy_assert(_j5.dump() == "{\"one\":1,\"two\":2,\"zero\":0}");
+    icy_assert(_j5.is<json::array>());
+    icy_assert(_j5.dump() == "[[\"zero\",0],[\"one\",1],[\"two\",2]]");
 
     const json _j6 = json::make_array({
         {"one", 1}, {"two", 2}, {"three", 3}
