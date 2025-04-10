@@ -112,5 +112,12 @@ int main(void) {
     icy_assert(_j9.is<json::array>());
     icy_assert(_j9.dump() == "[\"one\",2]");
 
+    const json _j10 = json::load(R"([
+        "one", 2,
+        { "three": 3, "four": 4 }
+    ])");
+    icy_assert(_j10.is<json::array>());
+    icy_assert(_j10.back()["four"] == 4);
+
     return 0;
 }
