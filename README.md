@@ -73,11 +73,7 @@ The dump would not be formatted, and there is no spaces in the dump.
 #### JSON construction / assignment in code
 
 Excluding the normal constructor,
-`initializer_list` provides a more convenient way to construct array or object.
-Constructors deduce json type according to details in `initializer_list`.
-
-Specifically, an `initializer_list` will be treated as key-value pair,
-only if **all of elements contains 2 elements and the type of the first one is string**.
+`initializer_list` provides a more convenient way to construct array.
 
 ~~~c++
 json j1 {1, 2, 3}; // [1, 2, 3]
@@ -88,6 +84,9 @@ json j3 {{"one", 1}, {"two", 2}, {true, 3}}; // [["one", 1], ["two", 2], [true, 
 For some ambiguous circumstance,
 `json::make_array` and `json::make_object` will treat `initializer_list`
 as array and key-value pair respectively.
+
+Specifically, an `initializer_list` will be treated as key-value pair,
+only if **all of elements contains 2 elements and the type of the first one is string**.
 
 ~~~c++
 json j1 = json::make_array({1, 2, 3}); // [1, 2, 3]
@@ -174,23 +173,31 @@ j.size(); // j is still monostate
 
 #### Access value
 
-Template `json::value` provides the ability of accessing value.
+Template `json::as` provides the ability of accessing value.
 
 In comparison or assignment, we overwrote relative operator,
 and there's no need to access value directly.
 
 ~~~c++
 json j = json::load("[3]");
-j[0].value<json::integer>(); // 3
+j[0].as<json::integer>(); // 3
 j[0] == 3; // true
 j[0] = j; // [[3]]
 ~~~
 
-If a wrong type argument is given in template `json::value`,
+If a wrong type argument is given in template `json::as`,
 exception `json::bad_cast` would be thrown.
 
 ~~~c++
 json j = json::load("3");
-try { j.value<json::boolean>(); }
+try { j.as<json::boolean>(); }
 catch (const json::bad_cast& e) {} // e.what() == "not the type"
+~~~
+
+Overloaded template `json::as` also provides a way to access value with no exception.
+It returns the default value, when a wrong type argument is given.
+
+~~~c++
+json j = json::load("[3]");
+const auto i = j.as<json::integer>(1); // i = 1
 ~~~
