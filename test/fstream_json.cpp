@@ -46,16 +46,16 @@ int main(void) {
     std::ifstream _ifs(_old.string());
     auto _ij = json::load(_ifs);
     auto _summary = json::load("{}");
-    icy_assert(_ij["version"] == 1);
-    icy_assert(_ij["cmake_build_type"] != "Debug");
+    EXPECT_EQ(_ij["version"], 1);
+    EXPECT_NQ(_ij["cmake_build_type"], "Debug");
     for (const auto& _third : _ij["third"].as<json::array>()) {
         _summary["acknowledgements"].push(_third);
     }
-    icy_assert(json::dump(_summary) == "{\"acknowledgements\":[\"1nchy/finite_state_machine\",\"tl/expected\"]}");
+    EXPECT_EQ(json::dump(_summary), "{\"acknowledgements\":[\"1nchy/finite_state_machine\",\"tl/expected\"]}");
     const auto& _na0 = _ij["configurations"]["nested_array"];
-    icy_assert(_na0.size() == 3ul);
-    icy_assert(_na0[2].size() == 3ul);
-    icy_assert(_na0[1] == 1);
+    EXPECT_EQ(_na0.size(), 3ul);
+    EXPECT_EQ(_na0[2].size(), 3ul);
+    EXPECT_EQ(_na0[1], 1);
     _ifs.close();
 
     json _oj;
@@ -97,6 +97,6 @@ int main(void) {
     json::dump(_oj, _ofs, 4);
     _ofs.close();
     const auto _ef = equal_files(_old, _new);
-    icy_assert(remove_file(_new) && _ef);
+    EXPECT_TRUE(remove_file(_new) && _ef);
     return 0;
 }
