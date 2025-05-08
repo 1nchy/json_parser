@@ -9,13 +9,6 @@ using namespace icy;
 using bad_cast = json::bad_cast;
 using exception = json::exception;
 
-auto about_bad_cast(const std::string& _msg, std::function<void()>&& _process) noexcept -> bool {
-    try { _process(); }
-    catch (const bad_cast& _e) { return _e.what() == _msg; }
-    catch (...) { return false; }
-    return false;
-}
-
 int main(void) {
     json _j = json();
     EXPECT_NOTHROW(_j.push(0));

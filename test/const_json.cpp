@@ -56,11 +56,19 @@ int main(void) {
     EXPECT_EQ(_l0[1], 1.0);
     EXPECT_EQ(_l0[2], json::monostate{});
     EXPECT_TRUE(_l0[3].as<json::object>().empty());
+    EXPECT_THROW(
+        std::out_of_range,
+        std::ignore = _l0[4]
+    );
     EXPECT_EQ(json::dump(_l0), "[true,1,null,{}]");
 
     const auto _o0 = json::load("{\"one\": 1, \"two\": 2}");
     EXPECT_EQ(_o0["one"], 1);
     EXPECT_EQ(_o0["two"], 2);
+    EXPECT_THROW(
+        std::out_of_range,
+        std::ignore = _o0["three"]
+    );
     EXPECT_EQ(json::dump(_o0), "{\"one\":1,\"two\":2}");
 
     const json _j0 {};
