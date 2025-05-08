@@ -34,18 +34,48 @@ auto esc_2_char(const char _c) -> char {
         default : return _c;
     }
 }
-auto char_2_esc(const char _c) -> char {
-    switch (_c) {
-    case '\a' : return 'a';
-    case '\b' : return 'b';
-    case '\f' : return 'f';
-    case '\n' : return 'n';
-    case '\r' : return 'r';
-    case '\t' : return 't';
-    case '\v' : return 'v';
-    case '\\' : return '\\';
-    default : return 0;
+
+auto encode(const std::string& _s) -> std::string {
+    // static const char* hex_digits = "0123456789abcdef";
+    std::string _out;
+    for (const char _c : _s) {
+        if (_c == '\a') {
+            _out += "\\a";
+        }
+        else if (_c == '\b') {
+            _out += "\\b";
+        }
+        else if (_c == '\f') {
+            _out += "\\f";
+        }
+        else if (_c == '\n') {
+            _out += "\\n";
+        }
+        else if (_c == '\r') {
+            _out += "\\r";
+        }
+        else if (_c == '\t') {
+            _out += "\\t";
+        }
+        else if (_c == '\v') {
+            _out += "\\v";
+        }
+        else if (_c == '\\') {
+            _out += "\\\\";
+        }
+        else if (_c == '\"') {
+            _out += "\\\"";
+        }
+        // else if (0x0 <= _c && _c < 0x20) {
+        //     _out += "\\u00";
+        //     _out += hex_digits[_c >> 4];
+        //     _out += hex_digits[_c & 0xf];
+        // }
+        else {
+            _out += _c;
+        }
     }
+    return _out;
 }
 
 }

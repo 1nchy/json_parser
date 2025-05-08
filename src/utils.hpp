@@ -8,7 +8,8 @@ namespace icy {
 template <typename _Tp> auto from_string(const std::string&) -> _Tp;
 
 auto esc_2_char(const char _c) -> char;
-auto char_2_esc(const char _c) -> char;
+
+auto encode(const std::string& _s) -> std::string;
 
 }
 

@@ -39,14 +39,7 @@ auto dumper::build_string(const json& _n) -> void {
 }
 auto dumper::build_string(const json::string& _s) -> void {
     _ss << '\"';
-    for (const char _c : _s) {
-        if (auto _x = char_2_esc(_c)) {
-            _ss << '\\' << _x;
-        }
-        else {
-            _ss << _c;
-        }
-    }
+    _ss << encode(_s);
     _ss << '\"';
 }
 auto dumper::build_array(const json& _n) -> void {

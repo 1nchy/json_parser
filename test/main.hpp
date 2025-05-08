@@ -13,13 +13,6 @@
 #define __ICY_STR(x) #x
 #define ICY_STR(x) __ICY_STR(x)
 
-#define EQ ==
-#define NQ !=
-#define LT <
-#define GT >
-#define LE <=
-#define GE >=
-
 namespace {
 void icy_abort(const char* _abortion, const char* _file, unsigned _line) {
     fprintf(stderr, "abort at %s, in %s:%u", _abortion, _file, _line);

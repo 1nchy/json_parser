@@ -19,9 +19,3 @@ template <typename... _Args> auto _M_from_here(const std::string& _here, _Args&&
 }
 
 #define from_here(...) _M_from_here(__FILE__, __VA_ARGS__)
-
-auto no_exception(std::function<void()>&& _process) noexcept -> bool {
-    try { _process(); }
-    catch (...) { return false; }
-    return true;
-}
