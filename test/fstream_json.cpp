@@ -1,4 +1,4 @@
-#include "main.hpp"
+#include "test.hpp"
 #include "utils.hpp"
 #include "json_parser.hpp"
 
@@ -41,62 +41,63 @@ auto remove_file(const std::filesystem::path& _file) -> bool {
     return std::filesystem::remove(_file);
 }
 
-int main(void) {
-    const auto _old = from_here("src", "configuration.json");
-    std::ifstream _ifs(_old.string());
-    auto _ij = json::load(_ifs);
+const auto _source = from_here("src", "configuration.json");
+
+ICY_CASE("read from file") {
+    std::ifstream _ifs(_source.string());
+    auto _j = json::load(_ifs);
     auto _summary = json::load("{}");
-    EXPECT_EQ(_ij["version"], 1);
-    EXPECT_NQ(_ij["cmake_build_type"], "Debug");
-    for (const auto& _third : _ij["third"].as<json::array>()) {
+    EXPECT_EQ(_j["version"], 1);
+    EXPECT_NE(_j["cmake_build_type"], "Debug");
+    for (const auto& _third : _j["third"].as<json::array>()) {
         _summary["acknowledgements"].push(_third);
     }
     EXPECT_EQ(json::dump(_summary), "{\"acknowledgements\":[\"1nchy/finite_state_machine\",\"tl/expected\"]}");
-    const auto& _na0 = _ij["configurations"]["nested_array"];
+    const auto& _na0 = _j["configurations"]["nested_array"];
     EXPECT_EQ(_na0.size(), 3ul);
     EXPECT_EQ(_na0[2].size(), 3ul);
     EXPECT_EQ(_na0[1], 1);
     _ifs.close();
-
-    json _oj;
-    _oj.insert("cmake_build_type", "Release");
-    _oj.insert("project", "json\tparser");
-    _oj.insert("version", json::integer(1));
+}
+ICY_CASE("write to file") {
+    json _j;
+    _j.insert("cmake_build_type", "Release");
+    _j.insert("project", "json\tparser");
+    _j.insert("version", json::integer(1));
     const std::vector<json::integer> _cxx_standard = {
         99, 11, 14, 17, 20
     };
     for (const auto _i : _cxx_standard) {
-        _oj["cxx_standard"].push(_i);
+        _j["cxx_standard"].push(_i);
     }
     const std::vector<json::string> _directories = {
         "/usr", "${workspaceFolder}", "${workspaceFolder}/third/*"
     };
     for (const auto& _d : _directories) {
-        _oj["include_directories"].push(_d + "/include");
-        _oj["link_directories"].push(_d + "/lib");
+        _j["include_directories"].push(_d + "/include");
+        _j["link_directories"].push(_d + "/lib");
     }
     const std::vector<json::string> _third = {
         "1nchy/finite_state_machine", "tl/expected"
     };
     for (const auto& _t : _third) {
-        _oj["third"].push(_t);
+        _j["third"].push(_t);
     }
-    auto& _na1 = _oj["configurations"]["nested_array"];
+    auto& _na1 = _j["configurations"]["nested_array"];
     _na1.push(json::load("[0]"));
     _na1.push(1);
     _na1.push(json::array{});
     _na1[2].push(2);
     _na1[2].push(json::load("[3]"));
     _na1[2].push(json::array{});
-    auto& _esc = _oj["configurations"]["escape"];
+    auto& _esc = _j["configurations"]["escape"];
     _esc.insert("", "");
     _esc.insert("t", "\t");
     _esc.insert("n", "\n");
     const auto _new = std::filesystem::current_path() / "configuration.json";
     std::ofstream _ofs(_new.string());
-    json::dump(_oj, _ofs, 4);
+    json::dump(_j, _ofs, 4);
     _ofs.close();
-    const auto _ef = equal_files(_old, _new);
+    const auto _ef = equal_files(_source, _new);
     EXPECT_TRUE(remove_file(_new) && _ef);
-    return 0;
 }

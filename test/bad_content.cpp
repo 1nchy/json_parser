@@ -1,4 +1,4 @@
-#include "main.hpp"
+#include "test.hpp"
 #include "utils.hpp"
 #include "json_parser.hpp"
 
@@ -7,131 +7,146 @@ using namespace icy;
 using bad_content = json::bad_content;
 using exception = json::exception;
 
-int main(void) {
-    EXPECT_THROW_MSG(
+ICY_CASE("RIGHT_CURLY_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{"),
-        exception::RIGHT_CURLY_EXPECTED
+        exception::RIGHT_CURLY_EXPECTED,
+        json::load("{")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{\"first\":1st"),
-        exception::RIGHT_CURLY_EXPECTED
+        exception::RIGHT_CURLY_EXPECTED,
+        json::load("{\"first\":1st")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("RIGHT_SQUARE_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("["),
-        exception::RIGHT_SQUARE_EXPECTED
+        exception::RIGHT_SQUARE_EXPECTED,
+        json::load("[")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("[1st"),
-        exception::RIGHT_SQUARE_EXPECTED
+        exception::RIGHT_SQUARE_EXPECTED,
+        json::load("[1st")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("[{},"),
-        exception::RIGHT_SQUARE_EXPECTED
+        exception::RIGHT_SQUARE_EXPECTED,
+        json::load("[{},")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("COLON_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{\"\"}"),
-        exception::COLON_EXPECTED
+        exception::COLON_EXPECTED,
+        json::load("{\"\"}")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("STRING_KEY_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{one:1}"),
-        exception::STRING_KEY_EXPECTED
+        exception::STRING_KEY_EXPECTED,
+        json::load("{one:1}")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{:1}"),
-        exception::STRING_KEY_EXPECTED
+        exception::STRING_KEY_EXPECTED,
+        json::load("{:1}")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("VALUE_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("[,]"),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load("[,]")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("]"),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load("]")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load(","),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load(",")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("truth"),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load("truth")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{\"first\":}"),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load("{\"first\":}")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{\"\":[}]"),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load("{\"\":[}]")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{\"\":[{},}]"),
-        exception::VALUE_EXPECTED
+        exception::VALUE_EXPECTED,
+        json::load("{\"\":[{},}]")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("END_OF_STRING_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("\"1nchy"),
-        exception::END_OF_STRING_EXPECTED
+        exception::END_OF_STRING_EXPECTED,
+        json::load("\"1nchy")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("\"1n\nchy\""),
-        exception::END_OF_STRING_EXPECTED
+        exception::END_OF_STRING_EXPECTED,
+        json::load("\"1n\nchy\"")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("END_OF_NUMBER_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("1."),
-        exception::END_OF_NUMBER_EXPECTED
+        exception::END_OF_NUMBER_EXPECTED,
+        json::load("1.")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("-"),
-        exception::END_OF_NUMBER_EXPECTED
+        exception::END_OF_NUMBER_EXPECTED,
+        json::load("-")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("TRAILING_COMMA") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("[1,2,]"),
-        exception::TRAILING_COMMA
+        exception::TRAILING_COMMA,
+        json::load("[1,2,]")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("{\"one\":1,}"),
-        exception::TRAILING_COMMA
+        exception::TRAILING_COMMA,
+        json::load("{\"one\":1,}")
     );
-    EXPECT_THROW_MSG(
+}
+ICY_CASE("END_OF_FILE_EXPECTED") {
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("1nchy"),
-        exception::END_OF_FILE_EXPECTED
+        exception::END_OF_FILE_EXPECTED,
+        json::load("1nchy")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("truefalse"),
-        exception::END_OF_FILE_EXPECTED
+        exception::END_OF_FILE_EXPECTED,
+        json::load("truefalse")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("[1,2,3],"),
-        exception::END_OF_FILE_EXPECTED
+        exception::END_OF_FILE_EXPECTED,
+        json::load("[1,2,3],")
     );
-    EXPECT_THROW_MSG(
+    EXPECT_THROW_WITH(
         bad_content,
-        json::load("[1,2,3][]"),
-        exception::END_OF_FILE_EXPECTED
+        exception::END_OF_FILE_EXPECTED,
+        json::load("[1,2,3][]")
     );
-    return 0;
 }

@@ -1,12 +1,9 @@
-#include "main.hpp"
+#include "test.hpp"
 #include "json_parser.hpp"
 
 using namespace icy;
 
-int main(void) {
-
-    /// const
-
+ICY_CASE("load && dump") {
     const auto _m0 = json::load(" ");
     EXPECT_EQ(_m0, json::monostate{});
     EXPECT_EQ(json::dump(_m0), "");
@@ -70,7 +67,8 @@ int main(void) {
         std::ignore = _o0["three"]
     );
     EXPECT_EQ(json::dump(_o0), "{\"one\":1,\"two\":2}");
-
+}
+ICY_CASE("initializer") {
     const json _j0 {};
     EXPECT_TRUE(_j0.is<json::monostate>());
 
@@ -95,7 +93,8 @@ int main(void) {
     };
     EXPECT_TRUE(_j5.is<json::array>());
     EXPECT_EQ(_j5.dump(), "[[\"zero\",0],[\"one\",1],[\"two\",2]]");
-
+}
+ICY_CASE("static method") {
     const json _j6 = json::make_array({
         {"one", 1}, {"two", 2}, {"three", 3}
     });
@@ -119,13 +118,12 @@ int main(void) {
     });
     EXPECT_TRUE(_j9.is<json::array>());
     EXPECT_EQ(_j9.dump(), "[\"one\",2]");
-
+}
+ICY_CASE("R string") {
     const json _j10 = json::load(R"([
         "one", 2,
         { "three": 3, "four": 4 }
     ])");
     EXPECT_TRUE(_j10.is<json::array>());
     EXPECT_EQ(_j10.back()["four"], 4);
-
-    return 0;
 }
